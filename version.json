@@ -1,14 +1,28 @@
 {
-    "update_instructions": "docker compose pull && docker compose up -d",
-    "changelog": [
-        "AOT Cython Native Extension Build: Military-grade source protection",
-        "Anti-Boxy CairoSVG Engine: Native gradients, drop-shadows, and radius controls",
-        "Trending Industry Radar: Real-time RSS threat and tech ideation feeds",
-        "SaaS V6 Interface: 3-tier navigation with Trust & Compliance Center",
-        "SaaS UI/UX Sidebar Overhaul",
-        "Enterprise Trust & Compliance Center",
-        "Universal Customer Deployment Scripts"
-    ],
-    "release_date": "2026-10-09",
-    "latest_version": "4.2.0"
+  "latest_version": "4.1.0",
+  "channel": "stable",
+  "release_date": "2026-10-31",
+  "build_number": 1042,
+  "images": {
+    "core_engine": "randumduck69/postall_engine:latest",
+    "ai_engine": "randumduck69/postall_ai:latest",
+    "gateway": "randumduck69/postall_gateway:latest",
+    "license_forge": "randumduck69/postall_license_forge:latest"
+  },
+  "compatibility": {
+    "docker_engine_min": "24.0.0",
+    "cuda_driver_min": "12.0",
+    "minimum_system_ram_gb": 8,
+    "recommended_system_ram_gb": 16
+  },
+  "changelog": [
+    "Milestone 20: White-label sovereign AI container packaging (randumduck69/postall_ai:latest) with baked Qwen 2.5 1.5B weights and internal Docker mesh resolution.",
+    "Milestone 21: Live Social Preview media rendering hotfix for Unified Content Studio and Express Pipeline via blob/Data URLs.",
+    "Milestone 21: Added toggle switch to enable/disable automated AI infographic generation in Express Pipeline for text-only drafting.",
+    "Milestone 21: Core Scheduling multi-post daily cadence with configurable inter-post intervals (hours) and automatic draft redistribution.",
+    "Milestone 21: Custom Persona Builder integration with persistent SQLite storage and instant UI dropdown synchronization.",
+    "Milestone 22: Modernized Gemini 1.5 Flash/Pro model integration with latest payload schema verification.",
+    "Milestone 22: Turnkey 1-Click enterprise deployment script (setup_postall.ps1) with automated image pull and GPU/CPU fallback."
+  ],
+  "update_instructions": "powershell -ExecutionPolicy Bypass -File ./setup_postall.ps1"
 }

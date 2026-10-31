@@ -1,0 +1,63 @@
+[
+  {
+    "version": "4.1.0",
+    "release_date": "2026-10-31",
+    "status": "latest",
+    "stability": "production-ready",
+    "docker_images": {
+      "postall_engine": "randumduck69/postall:latest",
+      "postall_ai": "randumduck69/postall_ai:latest",
+      "postall_gateway": "randumduck69/postall_gateway:latest",
+      "postall_license_forge": "randumduck69/postall_license_forge:latest"
+    },
+    "highlights": [
+      "Containerized air-gapped Qwen AI engine in postall_mesh network",
+      "Studio Live Social Previews with instant blob media rendering",
+      "Express Pipeline AI infographic generation toggle",
+      "Multi-post daily scheduling intervals",
+      "Custom Persona Builder synchronized with core generation engine",
+      "Modernized Gemini 1.5 Flash/Pro integration",
+      "1-Click enterprise deployment script"
+    ]
+  },
+  {
+    "version": "4.0.4",
+    "release_date": "2026-10-18",
+    "status": "supported",
+    "stability": "stable",
+    "docker_images": {
+      "postall_engine": "randumduck69/postall:v4.0.4",
+      "postall_gateway": "randumduck69/postall_gateway:v4.0.4"
+    },
+    "highlights": [
+      "Cython AOT compilation across 32 core backend modules",
+      "AES-256 encrypted credential vault storage",
+      "Full 28-tab enterprise dashboard"
+    ]
+  },
+  {
+    "version": "4.0.2",
+    "release_date": "2026-10-10",
+    "status": "maintenance",
+    "stability": "stable",
+    "docker_images": {
+      "postall_engine": "randumduck69/postall:v4.0.2"
+    },
+    "highlights": [
+      "Decoupled Ollama AI client integration",
+      "SOX 4-eyes dual authorization workflow"
+    ]
+  },
+  {
+    "version": "4.0.1",
+    "release_date": "2026-10-04",
+    "status": "deprecated",
+    "stability": "archived",
+    "docker_images": {
+      "postall_engine": "randumduck69/postall:v4.0.1"
+    },
+    "highlights": [
+      "Initial enterprise security patch"
+    ]
+  }
+]

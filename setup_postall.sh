@@ -1,101 +1,192 @@
-#!/usr/bin/env bash
+#!/bin/bash
+# ==============================================================================
+# POSTALL SOVEREIGN ENTERPRISE EDITION — 1-CLICK TURNKEY INSTALLER (LINUX/MAC)
+# ==============================================================================
+
 set -e
 
-echo "🚀 Starting Postall Pre-flight checks..."
-echo "   Brand: POSTALL: One For All — All For One"
+# Terminal Colors
+CYAN='\033[0;36m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+GRAY='\033[0;90m'
+NC='\033[0m'
+
+echo -e "${CYAN}=========================================================${NC}"
+echo -e "${CYAN}   POSTALL SOVEREIGN ENTERPRISE EDITION                 ${NC}"
+echo -e "${CYAN}   Turnkey 1-Click Customer Deployment Pipeline         ${NC}"
+echo -e "${CYAN}=========================================================${NC}"
+
+# ------------------------------------------------------------------------------
+# 1. Pre-flight Checks: Docker Daemon Verification
+# ------------------------------------------------------------------------------
+echo -e "${YELLOW}[1/5] Checking Docker engine status...${NC}"
 
 if ! command -v docker &> /dev/null; then
-    echo "⚠️ Docker is not installed."
-    read -p "Do you want to install Docker now? (y/n) " install_docker
-    if [[ "$install_docker" =~ ^[Yy]$ ]]; then
-        if [[ "$OSTYPE" == "darwin"* ]]; then
-            echo "macOS detected. Installing Docker Desktop via Homebrew..."
-            if ! command -v brew &> /dev/null; then
-                /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-            fi
-            brew install --cask docker
-            echo "✅ Please start Docker Desktop from your Applications folder."
-        elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-            echo "Linux detected. Fetching official Docker script..."
-            curl -fsSL https://get.docker.com -o get-docker.sh
-            sudo sh get-docker.sh
-            sudo usermod -aG docker "$USER"
-            rm get-docker.sh
-            echo "✅ Docker installed. Log out and back in, or run 'sudo systemctl start docker'."
-        else
-            echo "❌ Unsupported OS. Please install Docker manually."
-            exit 1
-        fi
-    else
-        echo "❌ Docker is required. Exiting."
-        exit 1
-    fi
-else
-    echo "✅ Docker is already installed."
-fi
-
-if ! docker info &> /dev/null; then
-    echo "❌ Docker daemon is not running. Please start it and try again."
+    echo -e "\n${RED}[ERROR] Docker CLI was not found in your system PATH.${NC}"
+    echo -e "${RED}Please install Docker (https://docs.docker.com/get-docker/) and rerun this script.${NC}"
     exit 1
 fi
 
-IMAGE_NAME="randumduck69/postall:v4-latest"
-CONTAINER_NAME="postall_engine"
-
-echo "📥 Pulling the latest Postall image..."
-docker pull "$IMAGE_NAME"
-
-read -p "✅ Image pulled successfully. Do you want to run Postall now? (y/n) " run_app
-if [[ "$run_app" =~ ^[Yy]$ ]]; then
-    echo "⚙️ Configuring runtime environment (Adaptive RAM: 4 GB base, 6 GB burst)..."
-    
-    # 1. Ensure persistent volume exists
-    docker volume create postall_data >/dev/null 2>&1 || true
-
-    # 2. Ensure shared mesh network exists
-    docker network create postall_mesh >/dev/null 2>&1 || true
-
-    # 3. Remove existing container if it exists
-    if docker ps -a -q -f name="^${CONTAINER_NAME}$" > /dev/null; then
-        docker rm -f "$CONTAINER_NAME" >/dev/null 2>&1 || true
-    fi
-
-    # 4. Detect optional local config and keys
-    EXTRA_MOUNTS=()
-    if [[ -f ".env" ]]; then
-        EXTRA_MOUNTS+=("-v" "$(pwd)/.env:/app/.env")
-    fi
-    if [[ -d "keys" ]]; then
-        EXTRA_MOUNTS+=("-v" "$(pwd)/keys:/app/keys")
-    fi
-
-    # 5. Launch container
-    docker run -d \
-        --name "$CONTAINER_NAME" \
-        --network postall_mesh \
-        -p 8000:8000 \
-        -v postall_data:/app/data \
-        "${EXTRA_MOUNTS[@]}" \
-        --memory-reservation="4g" \
-        --memory="6g" \
-        --memory-swap="6g" \
-        --log-opt max-size=50m \
-        --log-opt max-file=3 \
-        --restart unless-stopped \
-        "$IMAGE_NAME"
-
-    echo "✅ Container '$CONTAINER_NAME' is running on 'postall_mesh'."
-    URL="http://localhost:8000"
-    echo "🌐 Opening $URL in your default web browser..."
-    
-    if command -v xdg-open &> /dev/null; then
-        xdg-open "$URL"
-    elif [[ "$OSTYPE" == "darwin"* ]]; then
-        open "$URL"
-    else
-        echo "⚠ Could not detect browser. Please navigate to $URL manually."
-    fi
-else
-    echo "🛑 Setup complete. You can run the container later."
+if ! docker info > /dev/null 2>&1; then
+    echo -e "\n${RED}[ERROR] Docker daemon is not running or current user lacks access permissions.${NC}"
+    echo -e "${RED}Please start the Docker daemon (e.g. 'sudo systemctl start docker' or launch Docker Desktop) and rerun this installer.${NC}"
+    exit 1
 fi
-exit 0
+echo -e "${GREEN}Docker daemon is active and responsive.${NC}"
+
+# ------------------------------------------------------------------------------
+# 2. Local Directory Scaffolding (Prevents Docker mount errors)
+# ------------------------------------------------------------------------------
+echo -e "${YELLOW}[2/5] Scaffolding local configuration & credential stores...${NC}"
+mkdir -p keys data
+
+if [ ! -f ".env" ]; then
+    cat << 'EOF' > .env
+# ==============================================================================
+# Postall Sovereign Enterprise Configuration
+# ==============================================================================
+OLLAMA_BASE_URL=http://postall_llm:11434
+LINKEDIN_POST_TIME=09:00
+TIMEZONE=Asia/Kolkata
+DRY_RUN_MODE=0
+DLP_ENABLED=1
+BRAND_SAFETY_ENABLED=1
+STORAGE_BACKEND=local
+EOF
+    echo -e "  ${GRAY}-> Initialized default environment template: ./.env${NC}"
+fi
+echo -e "${GREEN}Local directories and environment configurations ready.${NC}"
+
+# ------------------------------------------------------------------------------
+# 3. Create Internal Mesh Network
+# ------------------------------------------------------------------------------
+echo -e "${YELLOW}[3/5] Configuring Postall virtual mesh network...${NC}"
+docker network create postall_mesh 2>/dev/null || true
+echo -e "${GREEN}Internal network 'postall_mesh' established.${NC}"
+
+# ------------------------------------------------------------------------------
+# 4. Pull Air-Gapped Production Images from Docker Hub
+# ------------------------------------------------------------------------------
+echo -e "${YELLOW}[4/5] Pulling production images from Docker Hub...${NC}"
+IMAGES=(
+    "randumduck69/postall_license_forge:latest"
+    "randumduck69/postall_gateway:latest"
+    "randumduck69/postall_ai:latest"
+    "randumduck69/postall_engine:latest"
+)
+
+for img in "${IMAGES[@]}"; do
+    echo -e "  ${CYAN}--> Pulling $img...${NC}"
+    docker pull "$img"
+done
+echo -e "${GREEN}All 4 production images verified locally.${NC}"
+
+# ------------------------------------------------------------------------------
+# 5. Sequentially Deploy the 4 Microservices
+# ------------------------------------------------------------------------------
+echo -e "${YELLOW}[5/5] Launching Postall Enterprise microservices...${NC}"
+
+# A. Postall License Forge
+echo -e "  ${CYAN}[1/4] Starting License Forge...${NC}"
+docker rm -f postall_license_forge 2>/dev/null || true
+docker run -d \
+  --name postall_license_forge \
+  --network postall_mesh \
+  --restart unless-stopped \
+  -p 8081:8001 \
+  --memory-reservation="1g" \
+  --memory="2g" \
+  --memory-swap="2g" \
+  -v "$(pwd)/data:/app/data" \
+  randumduck69/postall_license_forge:latest >/dev/null
+
+# B. Postall Gateway (Zero-Trust Proxy)
+echo -e "  ${CYAN}[2/4] Starting Zero-Trust Cloud Gateway...${NC}"
+docker rm -f postall_gateway 2>/dev/null || true
+docker run -d \
+  --name postall_gateway \
+  --network postall_mesh \
+  --restart unless-stopped \
+  -p 8080:8080 \
+  --memory-reservation="2g" \
+  --memory="4g" \
+  --memory-swap="4g" \
+  -v "$(pwd)/keys:/app/keys" \
+  randumduck69/postall_gateway:latest >/dev/null
+
+# C. Postall Sovereign AI Engine (Containerized Ollama)
+echo -e "  ${CYAN}[3/4] Starting Sovereign Local AI Engine...${NC}"
+docker rm -f postall_llm 2>/dev/null || true
+
+GPU_STARTED=0
+if command -v nvidia-smi &> /dev/null; then
+    if docker run -d \
+      --name postall_llm \
+      --network postall_mesh \
+      --restart unless-stopped \
+      --gpus=all \
+      -p 11434:11434 \
+      -v postall_llm_data:/root/.ollama \
+      randumduck69/postall_ai:latest >/dev/null 2>&1; then
+        GPU_STARTED=1
+        echo -e "        ${GREEN}Hardware acceleration enabled (--gpus=all).${NC}"
+    fi
+fi
+
+if [ $GPU_STARTED -eq 0 ]; then
+    echo -e "        ${YELLOW}Launching in CPU fallback mode...${NC}"
+    docker rm -f postall_llm 2>/dev/null || true
+    docker run -d \
+      --name postall_llm \
+      --network postall_mesh \
+      --restart unless-stopped \
+      -p 11434:11434 \
+      -v postall_llm_data:/root/.ollama \
+      randumduck69/postall_ai:latest >/dev/null
+    echo -e "        ${GREEN}CPU mode active.${NC}"
+fi
+
+# D. Postall Core Engine
+echo -e "  ${CYAN}[4/4] Starting Postall Core Platform Engine...${NC}"
+docker rm -f postall_engine 2>/dev/null || true
+docker run -d \
+  --name postall_engine \
+  --network postall_mesh \
+  --restart unless-stopped \
+  -p 8000:8000 \
+  -e OLLAMA_BASE_URL="http://postall_llm:11434" \
+  --memory-reservation="4g" \
+  --memory="6g" \
+  --memory-swap="6g" \
+  --log-opt max-size=50m \
+  --log-opt max-file=3 \
+  -v postall_data:/app/data \
+  -v "$(pwd)/.env:/app/.env" \
+  -v "$(pwd)/keys:/app/keys" \
+  randumduck69/postall_engine:latest >/dev/null
+
+sleep 3
+
+# ------------------------------------------------------------------------------
+# Success Output
+# ------------------------------------------------------------------------------
+echo -e "\n${GREEN}=========================================================${NC}"
+echo -e "${GREEN}   POSTALL DEPLOYMENT SUCCESSFUL!                       ${NC}"
+echo -e "${GREEN}   All 4 sovereign enterprise services are running.     ${NC}"
+echo -e "${GREEN}=========================================================${NC}"
+echo -e "\nAccess your Postall Enterprise Dashboard at:"
+echo -e "${GREEN}👉  http://localhost:8000/dashboard${NC}"
+echo -e "\n${GRAY}Microservice Topology:${NC}"
+echo -e "  ${GRAY}- Core Engine:   http://localhost:8000${NC}"
+echo -e "  ${GRAY}- Local AI Mesh: http://localhost:11434${NC}"
+echo -e "  ${GRAY}- Cloud Gateway: http://localhost:8080${NC}"
+echo -e "  ${GRAY}- License Forge: http://localhost:8081${NC}\n"
+
+# Attempt to open browser on supported systems
+if command -v xdg-open &> /dev/null; then
+    xdg-open "http://localhost:8000/dashboard" >/dev/null 2>&1 || true
+elif command -v open &> /dev/null; then
+    open "http://localhost:8000/dashboard" >/dev/null 2>&1 || true
+fi
