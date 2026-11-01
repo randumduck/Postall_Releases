@@ -284,9 +284,9 @@
         <section class="pt-24 pb-16 border-b theme-elevated">
             <div class="max-w-5xl mx-auto px-6 text-center">
                 <div class="inline-flex items-center space-x-3 px-4 py-1.5 rounded-full theme-card border text-xs theme-accent mb-8 shadow-sm backdrop-blur">
-                    <span class="flex items-center space-x-1.5 font-mono"><i class="fa-brands fa-github opacity-70"></i><span>randumduck/Postall_V4-Releases</span></span>
+                    <span class="flex items-center space-x-1.5 font-mono"><i class="fa-brands fa-github opacity-70"></i><span>randumduck/Postall_Releases</span></span>
                     <span class="opacity-40">•</span>
-                    <span class="text-emerald-600 dark:text-emerald-400 font-bold">v4.0.4 Stable</span>
+                    <span class="text-emerald-600 dark:text-emerald-400 font-bold">v4.1.0 Stable</span>
                 </div>
                 
                 <h1 class="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight mb-6 max-w-4xl mx-auto leading-[1.1]">
@@ -638,7 +638,7 @@
 
                     <!-- Command Box Container -->
                     <div class="border rounded-2xl p-4 sm:p-5 mb-8 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-inner relative z-10" style="background-color: var(--code-bg);">
-                        <code id="cmdText" aria-live="polite" class="text-xs sm:text-sm text-amber-400 font-mono break-all">Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/randumduck/Postall_V4-Releases/main/setup_postall.ps1' -OutFile 'setup_postall.ps1'</code>
+                        <code id="cmdText" aria-live="polite" class="text-xs sm:text-sm text-amber-400 font-mono break-all">Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/randumduck/Postall_Releases/main/setup_postall.ps1' -OutFile 'setup_postall.ps1'</code>
                         <button onclick="copyCommand()" id="copyBtn" class="w-full sm:w-auto bg-amber-600 hover:bg-amber-500 text-stone-950 px-5 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap shadow-md shadow-amber-600/30 flex items-center justify-center space-x-2">
                             <i class="fa-regular fa-copy"></i>
                             <span>Copy download command</span>
@@ -650,12 +650,12 @@
                     <p id="actionStatus" role="status" aria-live="polite" class="sr-only"></p>
 
                     <div class="flex flex-col sm:flex-row items-center justify-center gap-6 text-xs theme-muted relative z-10 font-medium">
-                        <a id="downloadLink" href="https://raw.githubusercontent.com/randumduck/Postall_V4-Releases/main/setup_postall.ps1" download="setup_postall.ps1" onclick="downloadScript(event)" class="hover:text-amber-600 dark:hover:text-amber-400 transition flex items-center space-x-2">
+                        <a id="downloadLink" href="https://raw.githubusercontent.com/randumduck/Postall_Releases/main/setup_postall.ps1" download="setup_postall.ps1" onclick="downloadScript(event)" class="hover:text-amber-600 dark:hover:text-amber-400 transition flex items-center space-x-2">
                             <i class="fa-solid fa-file-arrow-down theme-accent"></i>
                             <span id="downloadLinkText">Download PowerShell Script</span>
                         </a>
                         <span class="hidden sm:inline opacity-40">•</span>
-                        <a href="https://github.com/randumduck/Postall_V4-Releases" target="_blank" rel="noopener noreferrer" class="hover:text-amber-600 dark:hover:text-amber-400 transition flex items-center space-x-2">
+                        <a href="https://github.com/randumduck/Postall_Releases" target="_blank" rel="noopener noreferrer" class="hover:text-amber-600 dark:hover:text-amber-400 transition flex items-center space-x-2">
                             <i class="fa-solid fa-code-branch theme-accent"></i>
                             <span>Repository Source</span>
                         </a>
@@ -728,7 +728,7 @@
                 <a href="PRIVACY.md" class="hover:text-amber-500 transition">Privacy Policy</a>
                 <a href="TERMS.md" class="hover:text-amber-500 transition">Terms of Service</a>
                 <a href="LICENSE" class="hover:text-amber-500 transition">License</a>
-                <a href="https://github.com/randumduck/Postall_V4-Releases" target="_blank" rel="noopener noreferrer" class="theme-accent hover:underline flex items-center gap-1.5 font-semibold">
+                <a href="https://github.com/randumduck/Postall_Releases" target="_blank" rel="noopener noreferrer" class="theme-accent hover:underline flex items-center gap-1.5 font-semibold">
                     <i class="fa-brands fa-github"></i><span>GitHub Releases</span>
                 </a>
             </div>
@@ -739,18 +739,18 @@
     <script>
         const commands = {
             win: {
-                cmd: "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/randumduck/Postall_V4-Releases/main/setup_postall.ps1' -OutFile 'setup_postall.ps1'",
-                scriptUrl: "https://raw.githubusercontent.com/randumduck/Postall_V4-Releases/main/setup_postall.ps1",
+                cmd: "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/randumduck/Postall_Releases/main/setup_postall.ps1' -OutFile 'setup_postall.ps1'",
+                scriptUrl: "https://raw.githubusercontent.com/randumduck/Postall_Releases/main/setup_postall.ps1",
                 linkText: "Download PowerShell Script"
             },
             linux: {
-                cmd: "curl -fsSL -o setup_postall.sh 'https://raw.githubusercontent.com/randumduck/Postall_V4-Releases/main/setup_postall.sh'",
-                scriptUrl: "https://raw.githubusercontent.com/randumduck/Postall_V4-Releases/main/setup_postall.sh",
+                cmd: "curl -fsSL -o setup_postall.sh 'https://raw.githubusercontent.com/randumduck/Postall_Releases/main/setup_postall.sh'",
+                scriptUrl: "https://raw.githubusercontent.com/randumduck/Postall_Releases/main/setup_postall.sh",
                 linkText: "Download Bash Script"
             },
             mac: {
-                cmd: "curl -fsSL -o setup_postall.sh 'https://raw.githubusercontent.com/randumduck/Postall_V4-Releases/main/setup_postall.sh'",
-                scriptUrl: "https://raw.githubusercontent.com/randumduck/Postall_V4-Releases/main/setup_postall.sh",
+                cmd: "curl -fsSL -o setup_postall.sh 'https://raw.githubusercontent.com/randumduck/Postall_Releases/main/setup_postall.sh'",
+                scriptUrl: "https://raw.githubusercontent.com/randumduck/Postall_Releases/main/setup_postall.sh",
                 linkText: "Download Zsh/Bash Script"
             }
         };
@@ -1073,7 +1073,7 @@
                 action = { label: 'Read the data & privacy overview', href: '#security' };
             } else if (q.includes('backup') || q.includes('back up') || q.includes('volume') || q.includes('sqlite') || q.includes('storage') || q.includes('persist')) {
                 reply = 'The setup scripts mount a Docker named volume called postall_data at /app/data so application data is separate from the container. The Windows script warns before replacing an existing container; the Linux/macOS script removes the container by name when you choose to start it. Treat the volume as important data: make and test backups before upgrades or cleanup.';
-                action = { label: 'Open the repository', href: 'https://github.com/randumduck/Postall_V4-Releases' };
+                action = { label: 'Open the repository', href: 'https://github.com/randumduck/Postall_Releases' };
             } else if (q.includes('network') || q.includes('linkedin') || q.includes('instagram') || q.includes('youtube') || q.includes('tiktok') || q.includes('facebook') || q.includes('twitter') || q.includes('channel') || q.includes('social')) {
                 reply = 'This page lists LinkedIn, X, Instagram, YouTube, Facebook, and TikTok. Whether a specific account can publish, and which formats it supports, depends on the current app release, account type, and each platform’s API rules. Check the release notes and connect a test account before planning a production workflow.';
                 action = { label: 'View listed networks', href: '#integrations' };
@@ -1085,10 +1085,10 @@
                 action = { label: 'Explore the creative studio', href: '#creative-studio' };
             } else if (q.includes('compare') || q.includes('competitor') || q.includes('mixpost') || q.includes('postiz') || q.includes('buffer') || q.includes('hootsuite') || q.includes(' vs')) {
                 reply = 'I can’t make a reliable feature-by-feature comparison from this repository alone. The most useful comparison is to verify the current release’s supported platforms, publishing flows, security model, maintenance needs, and total hosting cost against your requirements.';
-                action = { label: 'Review the release repository', href: 'https://github.com/randumduck/Postall_V4-Releases' };
+                action = { label: 'Review the release repository', href: 'https://github.com/randumduck/Postall_Releases' };
             } else if (q.includes('price') || q.includes('cost') || q.includes('free') || q.includes('fee') || q.includes('license')) {
                 reply = 'This page presents Postall as self-hosted software. Self-hosting can avoid a hosted-service subscription, but it still has costs: hardware or cloud hosting, storage, backups, maintenance, and any third-party social or AI services you use. Check the repository for the current license and release terms.';
-                action = { label: 'Check the repository and license', href: 'https://github.com/randumduck/Postall_V4-Releases' };
+                action = { label: 'Check the repository and license', href: 'https://github.com/randumduck/Postall_Releases' };
             } else if (q.includes('agency') || q.includes('client') || q.includes('brand') || q.includes('team')) {
                 reply = 'The page positions Postall for creators, brands, and agencies, with a campaign-composition and multi-channel publishing workflow. Before adopting it for client work, verify account separation, user roles, approval flows, and supported network permissions in the current release; this landing page does not specify those operational details.';
                 action = { label: 'Explore the creative studio', href: '#creative-studio' };
@@ -1102,7 +1102,7 @@
                 reply = 'Hello! I can help with deployment, Docker requirements, data storage, privacy, the networks listed on this page, local AI, and support. What would you like to know?';
             } else {
                 reply = 'I can answer from the information published on this page and the included setup scripts. Try asking about Windows or Linux/macOS setup, Docker requirements, backups, privacy, supported networks, local AI, or contact details. For release-specific answers, check the project repository.';
-                action = { label: 'Open the release repository', href: 'https://github.com/randumduck/Postall_V4-Releases' };
+                action = { label: 'Open the release repository', href: 'https://github.com/randumduck/Postall_Releases' };
             }
 
             setTimeout(() => {
