@@ -99,6 +99,16 @@ if command -v nvidia-smi &> /dev/null; then
       --network postall_mesh \
       --restart unless-stopped \
       --gpus=all \
+      --memory="4g" \
+      --memory-swap="4g" \
+      --health-cmd="curl -f http://localhost:11434/api/tags || exit 1" \
+      --health-interval=30s \
+      --health-retries=3 \
+      --memory="4g" \
+      --memory-swap="4g" \
+      --health-cmd="curl -f http://localhost:11434/api/tags || exit 1" \
+      --health-interval=30s \
+      --health-retries=3 \
       -p 11434:11434 \
       -v postall_llm_data:/root/.ollama \
       randumduck69/postall_ai:latest >/dev/null 2>&1; then
@@ -114,6 +124,11 @@ if [ $GPU_STARTED -eq 0 ]; then
       --name postall_llm \
       --network postall_mesh \
       --restart unless-stopped \
+      --memory="4g" \
+      --memory-swap="4g" \
+      --health-cmd="curl -f http://localhost:11434/api/tags || exit 1" \
+      --health-interval=30s \
+      --health-retries=3 \
       -p 11434:11434 \
       -v postall_llm_data:/root/.ollama \
       randumduck69/postall_ai:latest >/dev/null
@@ -132,6 +147,9 @@ docker run -d \
   --memory-reservation="4g" \
   --memory="6g" \
   --memory-swap="6g" \
+  --health-cmd="curl -f http://localhost:8000/api/health || exit 1" \
+  --health-interval=30s \
+  --health-retries=3 \
   --log-opt max-size=50m \
   --log-opt max-file=3 \
   -v postall_data:/app/data \
