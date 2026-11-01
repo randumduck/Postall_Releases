@@ -5,9 +5,7 @@
   "build_number": 1042,
   "images": {
     "core_engine": "randumduck69/postall_engine:latest",
-    "ai_engine": "randumduck69/postall_ai:latest",
-    "gateway": "randumduck69/postall_gateway:latest",
-    "license_forge": "randumduck69/postall_license_forge:latest"
+    "ai_engine": "randumduck69/postall_ai:latest"
   },
   "compatibility": {
     "docker_engine_min": "24.0.0",
@@ -22,7 +20,7 @@
     "Milestone 21: Core Scheduling multi-post daily cadence with configurable inter-post intervals (hours) and automatic draft redistribution.",
     "Milestone 21: Custom Persona Builder integration with persistent SQLite storage and instant UI dropdown synchronization.",
     "Milestone 22: Modernized Gemini 1.5 Flash/Pro model integration with latest payload schema verification.",
-    "Milestone 22: Turnkey 1-Click enterprise deployment script (setup_postall.ps1) with automated image pull and GPU/CPU fallback."
+    "Milestone 23: Turnkey 1-Click customer deployment script (setup_postall.ps1 / setup_postall.sh) pulling Sovereign Core Engine and Local AI directly from Docker Hub."
   ],
   "update_instructions": "powershell -ExecutionPolicy Bypass -File ./setup_postall.ps1"
 }

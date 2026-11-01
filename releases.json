@@ -5,7 +5,7 @@
     "status": "latest",
     "stability": "production-ready",
     "docker_images": {
-      "postall_engine": "randumduck69/postall:latest",
+      "postall_engine": "randumduck69/postall_engine:latest",
       "postall_ai": "randumduck69/postall_ai:latest",
       "postall_gateway": "randumduck69/postall_gateway:latest",
       "postall_license_forge": "randumduck69/postall_license_forge:latest"

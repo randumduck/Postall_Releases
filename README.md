@@ -1,7 +1,7 @@
 # Postall Sovereign Enterprise Edition — Official Release Manifest
 
 [![Release Version](https://img.shields.io/badge/version-4.1.0-blue.svg)](./version.json)
-[![Docker Hub](https://img.shields.io/badge/docker-4%20production%20images-2496ed.svg)](https://hub.docker.com/u/randumduck69)
+[![Docker Hub](https://img.shields.io/badge/docker-production%20images-2496ed.svg)](https://hub.docker.com/u/randumduck69)
 [![License](https://img.shields.io/badge/license-Enterprise%20Proprietary-red.svg)](./LICENSE)
 [![Security Architecture](https://img.shields.io/badge/security-Zero--Trust%20Air--Gapped-emerald.svg)](./version.json)
 
@@ -11,7 +11,7 @@ Official release repository and distribution channel for **Postall Sovereign Ent
 
 ## 🏛️ System Architecture & Microservice Topology
 
-Postall deploys as an isolated multi-container mesh network (`postall_mesh`), completely decoupling core business logic from cloud networks and isolating local AI operations inside container layers:
+Postall deploys as an air-gapped sovereign microservice network on the customer's server, decoupling core business logic and AI processing from cloud telemetry:
 
 ```
                           ┌─────────────────────────────────────┐
@@ -20,25 +20,30 @@ Postall deploys as an isolated multi-container mesh network (`postall_mesh`), co
                                              │ HTTP :8000
                                              ▼
 ┌─────────────────────────────────────────────────────────────────────────────────┐
-│ Postall Mesh Network (postall_mesh)                                             │
+│ Customer Sovereign Environment (postall_mesh)                                   │
 │                                                                                 │
 │   ┌───────────────────────────┐                ┌────────────────────────────┐   │
 │   │       postall_engine      │ ── HTTP:11434 ─▶│        postall_llm         │   │
 │   │    (Core Platform:8000)   │                │   (Sovereign AI Engine)    │   │
 │   └─────────────┬─────────────┘                └────────────────────────────┘   │
-│                 │                                                               │
-│                 │ HTTP:8080                    HTTP:8081                        │
-│                 ▼                              ▼                                │
-│   ┌───────────────────────────┐   ┌─────────────────────────────┐               │
-│   │      postall_gateway      │   │    postall_license_forge    │               │
-│   │   (Zero-Trust Proxy:8080) │   │  (Cryptographic Node Lic.)  │               │
-│   └───────────────────────────┘   └─────────────────────────────┘               │
-└─────────────────────────────────────────────────────────────────────────────────┘
+└─────────────────┼───────────────────────────────────────────────────────────────┘
+                  │ HTTPS (Encrypted Passthrough)
+                  ▼
+┌───────────────────────────────────────────────────┐
+│ Postall Cloud Infrastructure                      │
+│                                                   │
+│   ┌───────────────────────────┐                   │
+│   │      postall_gateway      │                   │
+│   │ (Cloud Proxy: 24/7 Cloud) │                   │
+│   └───────────────────────────┘                   │
+└───────────────────────────────────────────────────┘
 ```
+
+> **Note on Licensing**: Software node licenses are cryptographically generated and signed by the publisher's License Authority (`postall_license_forge`), requiring zero runtime telemetry or continuous cloud heartbeats from customer installations.
 
 ---
 
-## 📦 Container Registry Inventory (Docker Hub)
+## 📦 Customer Container Inventory (Docker Hub)
 
 All container images are pre-compiled with Ahead-of-Time (AOT) Cython translation and baked AI model weights:
 
@@ -46,14 +51,12 @@ All container images are pre-compiled with Ahead-of-Time (AOT) Cython translatio
 | :--- | :--- | :--- | :--- | :--- |
 | **Core Platform Engine** | `randumduck69/postall_engine:latest` | `8000:8000` | 4 GB Res / 6 GB Burst | 28-tab UI, scheduler daemon, syllabus ingest |
 | **Sovereign Local AI** | `randumduck69/postall_ai:latest` | `11434:11434` | GPU / 4 GB CPU | Air-gapped Qwen 2.5 1.5B local LLM runtime |
-| **Zero-Trust Gateway** | `randumduck69/postall_gateway:latest` | `8080:8080` | 2 GB Res / 4 GB Burst | Stateless OAuth 2.0 broker & media passthrough |
-| **License Forge** | `randumduck69/postall_license_forge:latest` | `8081:8001` | 1 GB Res / 2 GB Burst | Ed25519 cryptographic HWID node verification |
 
 ---
 
 ## 🚀 1-Click Turnkey Deployment
 
-### Option A: Automated PowerShell Deployment (Recommended)
+### Option A: Automated PowerShell Deployment (Windows)
 Run the turnkey installer directly on any Windows workstation or server with Docker Desktop installed:
 
 ```powershell
@@ -63,11 +66,16 @@ powershell -ExecutionPolicy Bypass -File ./setup_postall.ps1
 The script automatically:
 1. Validates Docker daemon connectivity and permissions.
 2. Initializes the `postall_mesh` bridge network.
-3. Pulls the latest production images from Docker Hub.
-4. Spins up all 4 microservices with memory reservations and GPU passthrough.
+3. Pulls the latest production images (`postall_engine` and `postall_ai`) from Docker Hub.
+4. Spins up both microservices with memory reservations and GPU passthrough (with automatic CPU fallback).
 5. Launches the enterprise dashboard at `http://localhost:8000/dashboard`.
 
-### Option B: Docker Compose
+### Option B: Linux / macOS Deployment
+```bash
+bash setup_postall.sh
+```
+
+### Option C: Docker Compose
 ```bash
 docker compose pull
 docker compose up -d
@@ -87,6 +95,7 @@ docker compose up -d
 - **Multi-Post Daily Cadence**: Configurable posts per day with automatic hourly interval scheduling and draft redistribution.
 - **Custom Persona Builder**: Full synchronization of database-managed brand personas with the local AI synthesis engine.
 - **Gemini 1.5 Architecture**: Modernized public fallback models to Google Gemini 1.5 Flash and Pro.
+- **Customer Turnkey Installers**: One-click customer installers (`setup_postall.ps1` and `setup_postall.sh`) deploying Core Platform and Sovereign Local AI.
 
 ---
 

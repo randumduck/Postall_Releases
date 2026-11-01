@@ -63,7 +63,9 @@ echo -e "${GREEN}Local directories and environment configurations ready.${NC}"
 # 3. Create Internal Mesh Network
 # ------------------------------------------------------------------------------
 echo -e "${YELLOW}[3/5] Configuring Postall virtual mesh network...${NC}"
-docker network create postall_mesh 2>/dev/null || true
+if ! docker network ls --filter "name=^postall_mesh$" --format "{{.Name}}" | grep -q "postall_mesh"; then
+    docker network create postall_mesh 2>/dev/null || true
+fi
 echo -e "${GREEN}Internal network 'postall_mesh' established.${NC}"
 
 # ------------------------------------------------------------------------------
@@ -71,8 +73,6 @@ echo -e "${GREEN}Internal network 'postall_mesh' established.${NC}"
 # ------------------------------------------------------------------------------
 echo -e "${YELLOW}[4/5] Pulling production images from Docker Hub...${NC}"
 IMAGES=(
-    "randumduck69/postall_license_forge:latest"
-    "randumduck69/postall_gateway:latest"
     "randumduck69/postall_ai:latest"
     "randumduck69/postall_engine:latest"
 )
@@ -81,43 +81,15 @@ for img in "${IMAGES[@]}"; do
     echo -e "  ${CYAN}--> Pulling $img...${NC}"
     docker pull "$img"
 done
-echo -e "${GREEN}All 4 production images verified locally.${NC}"
+echo -e "${GREEN}Production images verified locally.${NC}"
 
 # ------------------------------------------------------------------------------
-# 5. Sequentially Deploy the 4 Microservices
+# 5. Deploy Postall Sovereign Microservices (AI Engine & Platform)
 # ------------------------------------------------------------------------------
-echo -e "${YELLOW}[5/5] Launching Postall Enterprise microservices...${NC}"
+echo -e "${YELLOW}[5/5] Launching Postall Sovereign microservices...${NC}"
 
-# A. Postall License Forge
-echo -e "  ${CYAN}[1/4] Starting License Forge...${NC}"
-docker rm -f postall_license_forge 2>/dev/null || true
-docker run -d \
-  --name postall_license_forge \
-  --network postall_mesh \
-  --restart unless-stopped \
-  -p 8081:8001 \
-  --memory-reservation="1g" \
-  --memory="2g" \
-  --memory-swap="2g" \
-  -v "$(pwd)/data:/app/data" \
-  randumduck69/postall_license_forge:latest >/dev/null
-
-# B. Postall Gateway (Zero-Trust Proxy)
-echo -e "  ${CYAN}[2/4] Starting Zero-Trust Cloud Gateway...${NC}"
-docker rm -f postall_gateway 2>/dev/null || true
-docker run -d \
-  --name postall_gateway \
-  --network postall_mesh \
-  --restart unless-stopped \
-  -p 8080:8080 \
-  --memory-reservation="2g" \
-  --memory="4g" \
-  --memory-swap="4g" \
-  -v "$(pwd)/keys:/app/keys" \
-  randumduck69/postall_gateway:latest >/dev/null
-
-# C. Postall Sovereign AI Engine (Containerized Ollama)
-echo -e "  ${CYAN}[3/4] Starting Sovereign Local AI Engine...${NC}"
+# A. Postall Sovereign AI Engine (Containerized Ollama)
+echo -e "  ${CYAN}[1/2] Starting Sovereign Local AI Engine...${NC}"
 docker rm -f postall_llm 2>/dev/null || true
 
 GPU_STARTED=0
@@ -148,8 +120,8 @@ if [ $GPU_STARTED -eq 0 ]; then
     echo -e "        ${GREEN}CPU mode active.${NC}"
 fi
 
-# D. Postall Core Engine
-echo -e "  ${CYAN}[4/4] Starting Postall Core Platform Engine...${NC}"
+# B. Postall Core Engine
+echo -e "  ${CYAN}[2/2] Starting Postall Core Platform Engine...${NC}"
 docker rm -f postall_engine 2>/dev/null || true
 docker run -d \
   --name postall_engine \
@@ -174,15 +146,13 @@ sleep 3
 # ------------------------------------------------------------------------------
 echo -e "\n${GREEN}=========================================================${NC}"
 echo -e "${GREEN}   POSTALL DEPLOYMENT SUCCESSFUL!                       ${NC}"
-echo -e "${GREEN}   All 4 sovereign enterprise services are running.     ${NC}"
+echo -e "${GREEN}   Core Platform Engine & Sovereign Local AI online.    ${NC}"
 echo -e "${GREEN}=========================================================${NC}"
 echo -e "\nAccess your Postall Enterprise Dashboard at:"
 echo -e "${GREEN}👉  http://localhost:8000/dashboard${NC}"
 echo -e "\n${GRAY}Microservice Topology:${NC}"
 echo -e "  ${GRAY}- Core Engine:   http://localhost:8000${NC}"
-echo -e "  ${GRAY}- Local AI Mesh: http://localhost:11434${NC}"
-echo -e "  ${GRAY}- Cloud Gateway: http://localhost:8080${NC}"
-echo -e "  ${GRAY}- License Forge: http://localhost:8081${NC}\n"
+echo -e "  ${GRAY}- Local AI Mesh: http://localhost:11434${NC}\n"
 
 # Attempt to open browser on supported systems
 if command -v xdg-open &> /dev/null; then

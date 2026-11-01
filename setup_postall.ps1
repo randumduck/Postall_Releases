@@ -74,8 +74,6 @@ Write-Host "Internal network 'postall_mesh' established." -ForegroundColor Green
 # ------------------------------------------------------------------------------
 Write-Host "[4/5] Pulling production images from Docker Hub..." -ForegroundColor Yellow
 $Images = @(
-    "randumduck69/postall_license_forge:latest",
-    "randumduck69/postall_gateway:latest",
     "randumduck69/postall_ai:latest",
     "randumduck69/postall_engine:latest"
 )
@@ -88,43 +86,15 @@ foreach ($img in $Images) {
         exit $LASTEXITCODE
     }
 }
-Write-Host "All 4 production images verified locally." -ForegroundColor Green
+Write-Host "Production images verified locally." -ForegroundColor Green
 
 # ------------------------------------------------------------------------------
-# 5. Sequentially Deploy the 4 Microservices
+# 5. Deploy Postall Sovereign Microservices (AI Engine & Platform)
 # ------------------------------------------------------------------------------
-Write-Host "[5/5] Launching Postall Enterprise microservices..." -ForegroundColor Yellow
+Write-Host "[5/5] Launching Postall Sovereign microservices..." -ForegroundColor Yellow
 
-# A. Postall License Forge
-Write-Host "  [1/4] Starting License Forge..." -ForegroundColor Cyan
-docker rm -f postall_license_forge 2>$null | Out-Null
-docker run -d `
-  --name postall_license_forge `
-  --network postall_mesh `
-  --restart unless-stopped `
-  -p 8081:8001 `
-  --memory-reservation="1g" `
-  --memory="2g" `
-  --memory-swap="2g" `
-  -v "${PWD}/data:/app/data" `
-  randumduck69/postall_license_forge:latest 2>$null | Out-Null
-
-# B. Postall Gateway (Zero-Trust Proxy)
-Write-Host "  [2/4] Starting Zero-Trust Cloud Gateway..." -ForegroundColor Cyan
-docker rm -f postall_gateway 2>$null | Out-Null
-docker run -d `
-  --name postall_gateway `
-  --network postall_mesh `
-  --restart unless-stopped `
-  -p 8080:8080 `
-  --memory-reservation="2g" `
-  --memory="4g" `
-  --memory-swap="4g" `
-  -v "${PWD}/keys:/app/keys" `
-  randumduck69/postall_gateway:latest 2>$null | Out-Null
-
-# C. Postall Sovereign AI Engine (Containerized Ollama)
-Write-Host "  [3/4] Starting Sovereign Local AI Engine..." -ForegroundColor Cyan
+# A. Postall Sovereign AI Engine (Containerized Ollama with Qwen weights)
+Write-Host "  [1/2] Starting Sovereign Local AI Engine..." -ForegroundColor Cyan
 docker rm -f postall_llm 2>$null | Out-Null
 $gpuStarted = $false
 try {
@@ -158,8 +128,8 @@ if (-not $gpuStarted) {
     Write-Host "        CPU mode active." -ForegroundColor Green
 }
 
-# D. Postall Core Engine
-Write-Host "  [4/4] Starting Postall Core Platform Engine..." -ForegroundColor Cyan
+# B. Postall Core Engine
+Write-Host "  [2/2] Starting Postall Core Platform Engine..." -ForegroundColor Cyan
 docker rm -f postall_engine 2>$null | Out-Null
 docker run -d `
   --name postall_engine `
@@ -184,15 +154,13 @@ Start-Sleep -Seconds 3
 # ------------------------------------------------------------------------------
 Write-Host "`n=========================================================" -ForegroundColor Green
 Write-Host "   POSTALL DEPLOYMENT SUCCESSFUL!                       " -ForegroundColor Green
-Write-Host "   All 4 sovereign enterprise services are running.     " -ForegroundColor Green
+Write-Host "   Core Platform Engine & Sovereign Local AI online.    " -ForegroundColor Green
 Write-Host "=========================================================" -ForegroundColor Green
 Write-Host "`nAccess your Postall Enterprise Dashboard at:" -ForegroundColor White
 Write-Host "👉  http://localhost:8000/dashboard" -ForegroundColor Green -BackgroundColor Black
 Write-Host "`nMicroservice Topology:" -ForegroundColor Gray
 Write-Host "  - Core Engine:   http://localhost:8000" -ForegroundColor Gray
 Write-Host "  - Local AI Mesh: http://localhost:11434" -ForegroundColor Gray
-Write-Host "  - Cloud Gateway: http://localhost:8080" -ForegroundColor Gray
-Write-Host "  - License Forge: http://localhost:8081" -ForegroundColor Gray
 Write-Host ""
 
 $dashUrl = "http://localhost:8000/dashboard"
