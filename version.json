@@ -1,11 +1,13 @@
 {
-  "latest_version": "4.1.0",
+  "latest_version": "4.2.0",
   "channel": "stable",
-  "release_date": "2026-10-31",
-  "build_number": 1042,
+  "release_date": "2026-11-09",
+  "build_number": 1055,
   "images": {
     "core_engine": "randumduck69/postall_engine:latest",
-    "ai_engine": "randumduck69/postall_ai:latest"
+    "ai_engine": "randumduck69/postall_ai:latest",
+    "gateway": "randumduck69/postall_gateway:latest",
+    "license_forge": "randumduck69/postall_license_forge:latest"
   },
   "compatibility": {
     "docker_engine_min": "24.0.0",
@@ -14,13 +16,12 @@
     "recommended_system_ram_gb": 16
   },
   "changelog": [
-    "Milestone 20: White-label sovereign AI container packaging (randumduck69/postall_ai:latest) with baked Qwen 2.5 1.5B weights and internal Docker mesh resolution.",
-    "Milestone 21: Live Social Preview media rendering hotfix for Unified Content Studio and Express Pipeline via blob/Data URLs.",
-    "Milestone 21: Added toggle switch to enable/disable automated AI infographic generation in Express Pipeline for text-only drafting.",
-    "Milestone 21: Core Scheduling multi-post daily cadence with configurable inter-post intervals (hours) and automatic draft redistribution.",
-    "Milestone 21: Custom Persona Builder integration with persistent SQLite storage and instant UI dropdown synchronization.",
-    "Milestone 22: Modernized Gemini 1.5 Flash/Pro model integration with latest payload schema verification.",
-    "Milestone 23: Turnkey 1-Click customer deployment script (setup_postall.ps1 / setup_postall.sh) pulling Sovereign Core Engine and Local AI directly from Docker Hub."
+    "Milestone 24: Interactive Multi-Model ROI Calculator (/api/analytics/roi-calculator) comparing Sovereign local LLM ($0 tokens) against GPT-4o, Claude 3.5 Sonnet, and Google Gemini.",
+    "Milestone 24: Executive Boardroom Digest (/api/analytics/executive-digest) reporting content throughput, SOX Maker-Checker compliance, and Merkle audit chain.",
+    "Milestone 24: Zero-Trust Gateway RS256 JWT cryptographic authentication with 60s sliding Anti-Replay cache and payload SHA-256 tamper protection.",
+    "Milestone 24: Cartoon Tech Explainer vector SVG avatar rendering engine and multi-slide LinkedIn document PDF carousel builder.",
+    "Milestone 24: Multi-Tenant Vault AES-256 Fernet cipher isolation for per-workspace BYO-Keys with case-insensitive pattern matching.",
+    "Milestone 24: Comprehensive Customer Setup Guide with visual ASCII walkthrough diagrams for every installation and configuration purpose."
   ],
   "update_instructions": "powershell -ExecutionPolicy Bypass -File ./setup_postall.ps1"
 }

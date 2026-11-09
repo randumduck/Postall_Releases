@@ -1,0 +1,53 @@
+version: '3.8'
+
+networks:
+  postall_mesh:
+    name: postall_mesh
+    driver: bridge
+
+volumes:
+  postall_data:
+    name: postall_data
+  postall_llm_data:
+    name: postall_llm_data
+
+services:
+  # ----------------------------------------------------------------------------
+  # 1. Postall Sovereign AI Engine (Containerized Local LLM)
+  # ----------------------------------------------------------------------------
+  postall_llm:
+    image: randumduck69/postall_ai:latest
+    container_name: postall_llm
+    restart: unless-stopped
+    networks:
+      - postall_mesh
+    ports:
+      - "11434:11434"
+    volumes:
+      - postall_llm_data:/root/.ollama
+
+  # ----------------------------------------------------------------------------
+  # 2. Postall Core Engine (Enterprise Social Media Automation Platform)
+  # ----------------------------------------------------------------------------
+  postall_engine:
+    image: randumduck69/postall_engine:latest
+    container_name: postall_engine
+    restart: unless-stopped
+    networks:
+      - postall_mesh
+    ports:
+      - "8000:8000"
+    environment:
+      - OLLAMA_BASE_URL=http://postall_llm:11434
+    volumes:
+      - postall_data:/app/data
+      - ./.env:/app/.env
+      - ./keys:/app/keys
+    deploy:
+      resources:
+        limits:
+          memory: 6G
+        reservations:
+          memory: 4G
+    depends_on:
+      - postall_llm

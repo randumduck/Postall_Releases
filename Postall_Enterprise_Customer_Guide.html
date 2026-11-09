@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Postall Sovereign Enterprise Edition — Customer Configuration Guide</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { background-color: #070a14; color: #e2e8f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  pre { background: #0c1220; padding: 16px; border-radius: 12px; border: 1px solid #1e293b; overflow-x: auto; font-family: monospace; font-size: 13px; color: #38bdf8; }
+</style>
+</head>
+<body class="p-6 md:p-12 max-w-5xl mx-auto">
+  <header class="mb-12 border-b border-slate-800 pb-8 text-center">
+    <div class="inline-block px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 font-mono text-xs uppercase tracking-wider mb-3">Postall Sovereign Enterprise Edition</div>
+    <h1 class="text-4xl font-extrabold text-white tracking-tight">Customer Configuration &amp; Deployment Manual</h1>
+    <p class="text-slate-400 mt-2 text-sm">Air-Gapped Sovereign AI · Zero-Trust Gateway · Frontier Multi-Cloud BYO-Key Architecture</p>
+  </header>
+
+  <main>
+    
+        <section id="00_POSTALL_SOVEREIGN_OVERVIEW" class="mb-16 p-8 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-xl">
+            <h1 class="text-3xl font-black text-cyan-400 mt-8 mb-4 border-b border-slate-700 pb-2">POSTALL SOVEREIGN ENTERPRISE</h1>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">System Architecture &amp; Operational Blueprint</h2>
+<p class="text-slate-300 my-2 leading-relaxed"><strong class="text-white">Classification:</strong> Confidential &amp; Sovereign Enterprise  </p>
+<p class="text-slate-300 my-2 leading-relaxed"><strong class="text-white">Version:</strong> 4.0.0 (Production Release)  </p>
+<p class="text-slate-300 my-2 leading-relaxed"><strong class="text-white">Author:</strong> Postall Core Engineering  </p>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">1. Executive Summary</h2>
+<p class="text-slate-300 my-2 leading-relaxed"><strong class="text-white">Postall</strong> is a sovereign, zero-trust social media automation, curriculum ingestion, and strategic communications platform. Built ground-up for regulated enterprises, sovereign government defense nodes, and multi-brand agencies, Postall operates in a 100% air-gapped environment with offline local artificial intelligence (Ollama / Llama.cpp), cryptographic Ed25519 licensing, and end-to-end data isolation across brand workspaces.</p>
+<pre><code class="language-">
++-----------------------------------------------------------------------------+
+|                           POSTALL CLUSTER MESH                              |
++-----------------------------------------------------------------------------+
+|                                                                             |
+|   [ Ingress: Port 8080 ]                                                    |
+|           |                                                                 |
+|   +---------------+     Mutual TLS / Token Track     +------------------+   |
+|   | postall_      | -------------------------------&gt; | postall_engine   |   |
+|   | gateway       |                                  | (Port 8000)      |   |
+|   +---------------+                                  +------------------+   |
+|                                                               |             |
+|                                           +-------------------+----------+  |
+|                                           |                              |  |
+|                                   +---------------+              +---------------+
+|                                   | postall_llm   |              | postall_      |
+|                                   | (Port 11434)  |              | license_forge |
+|                                   | Local AI GGUF |              | (Port 8081)   |
+|                                   +---------------+              +---------------+
+|                                   [ Zero Egress ]                [ Ed25519 HSM ] |
++-----------------------------------------------------------------------------+
+</code></pre>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">2. Core Service Topography</h2>
+<tr class="even:bg-slate-800/40"><td class="p-2 border border-slate-700">Container Node</td><td class="p-2 border border-slate-700">Internal Port</td><td class="p-2 border border-slate-700">Host Port</td><td class="p-2 border border-slate-700">Role</td><td class="p-2 border border-slate-700">Protocol</td></tr>
+<p class="text-slate-300 my-2 leading-relaxed">| :--- | :--- | :--- | :--- | :--- |</p>
+<tr class="even:bg-slate-800/40"><td class="p-2 border border-slate-700">`postall_engine`</td><td class="p-2 border border-slate-700">`8000`</td><td class="p-2 border border-slate-700">`8000`</td><td class="p-2 border border-slate-700">Core API, UI, Scheduler, Asset Engine</td><td class="p-2 border border-slate-700">HTTP/FastAPI</td></tr>
+<tr class="even:bg-slate-800/40"><td class="p-2 border border-slate-700">`postall_gateway`</td><td class="p-2 border border-slate-700">`8080`</td><td class="p-2 border border-slate-700">`8080`</td><td class="p-2 border border-slate-700">Reverse Proxy, Rate Limiter, Anti-Replay</td><td class="p-2 border border-slate-700">HTTP/ASGI</td></tr>
+<tr class="even:bg-slate-800/40"><td class="p-2 border border-slate-700">`postall_llm`</td><td class="p-2 border border-slate-700">`11434`</td><td class="p-2 border border-slate-700">`11434`</td><td class="p-2 border border-slate-700">Sovereign Local LLM (Qwen 2.5 / llama.cpp)</td><td class="p-2 border border-slate-700">HTTP/REST</td></tr>
+<tr class="even:bg-slate-800/40"><td class="p-2 border border-slate-700">`postall_license_forge`</td><td class="p-2 border border-slate-700">`8001`</td><td class="p-2 border border-slate-700">`8081`</td><td class="p-2 border border-slate-700">Asymmetric Ed25519 License Authority</td><td class="p-2 border border-slate-700">HTTP/FastAPI</td></tr>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">3. Guiding Architectural Principles</h2>
+<p class="text-slate-300 my-2 leading-relaxed">1. <strong class="text-white">Air-Gap First (Zero Data Egress):</strong> Local AI models run entirely on physical server VRAM/RAM. Zero customer prompts or analytics ever exit the sovereign boundary.</p>
+<p class="text-slate-300 my-2 leading-relaxed">2. <strong class="text-white">Cryptographic Verifiability:</strong> Digital signatures protect every license file, media asset URL, and administrative event.</p>
+<p class="text-slate-300 my-2 leading-relaxed">3. <strong class="text-white">Multi-Tenant Isolation:</strong> Brand workspaces partition drafts, schedules, personas, and audit logs by workspace identity.</p>
+        </section>
+        
+        <section id="01_LICENSE_FORGE_AND_TIERS" class="mb-16 p-8 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-xl">
+            <h1 class="text-3xl font-black text-cyan-400 mt-8 mb-4 border-b border-slate-700 pb-2">POSTALL HOW-TO GUIDE: 01</h1>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">License Forge &amp; Tier Entitlement Configuration</h2>
+<p class="text-slate-300 my-2 leading-relaxed"><strong class="text-white">Subsystem:</strong> Cryptographic Licensing Authority  </p>
+<p class="text-slate-300 my-2 leading-relaxed"><strong class="text-white">Forge UI:</strong> <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">http://localhost:8081</code> | <strong class="text-white">Core UI:</strong> <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">http://localhost:8000</code>  </p>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">1. Overview</h2>
+<p class="text-slate-300 my-2 leading-relaxed">Postall utilizes asymmetric <strong class="text-white">Ed25519</strong> digital signatures to enforce subscription tiers and feature entitlements. Licenses are issued by the <strong class="text-white">Postall License Forge</strong> (<code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">postall_license_forge:8081</code>) and validated locally by the core engine (<code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">postall_engine:8000</code>) without requiring internet connectivity.</p>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">2. Subscription Tiers Specification</h2>
+<pre><code class="language-">
++---------------------------+---------------------------+---------------------------+
+| STARTER / CREATOR         | AGENCY / MULTI-BRAND      | SOVEREIGN ENTERPRISE      |
+| Price: ₹999 / month       | Price: ₹4,999 / month     | Price: ₹19,999+ / month   |
++---------------------------+---------------------------+---------------------------+
+| • 1 Brand Workspace       | • 15 Brand Workspaces     | • Unlimited Workspaces    |
+| • Single-Channel Posting  | • 4 Publishing Slots      | • Unlimited Slots         |
+| • Offline Local AI        | • Omnichannel Simulcast   | • SOC-2 / FINRA Export    |
+| • Direct Media Upload     | • Multi-AI Failover Pool  | • Air-Gapped Docker Nodes |
+|                           | • Visual Calendar         | • Full Governance &amp; Audit |
++---------------------------+---------------------------+---------------------------+
+</code></pre>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">3. How to Generate a Signed License Key</h2>
+<p class="text-slate-300 my-2 leading-relaxed">1. Navigate to the <strong class="text-white">License Forge UI</strong> in your browser at <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">http://localhost:8081</code>.</p>
+<p class="text-slate-300 my-2 leading-relaxed">2. Fill in the <strong class="text-white">Client / Organization Name</strong> (e.g., <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">Acme Cyber Defense Corp</code>).</p>
+<p class="text-slate-300 my-2 leading-relaxed">3. Select your target <strong class="text-white">Tier Preset</strong>:</p>
+<p class="text-slate-300 my-2 leading-relaxed">   - <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">Creator Tier (₹999/mo)</code></p>
+<p class="text-slate-300 my-2 leading-relaxed">   - <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">Professional Tier (₹4,999/mo)</code></p>
+<p class="text-slate-300 my-2 leading-relaxed">   - <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">Sovereign Enterprise Tier (₹19,999+/mo)</code></p>
+<p class="text-slate-300 my-2 leading-relaxed">4. Set <strong class="text-white">Validity Period</strong> (e.g., <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">30</code>, <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">90</code>, <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">365</code> days).</p>
+<p class="text-slate-300 my-2 leading-relaxed">5. *(Optional)* Provide a <strong class="text-white">Hardware ID (HWID)</strong> to cryptographically lock the key to a specific physical server node.</p>
+<p class="text-slate-300 my-2 leading-relaxed">6. Click <strong class="text-white">Generate Signed License Key</strong>.</p>
+<p class="text-slate-300 my-2 leading-relaxed">7. Copy the generated Base64 license key string.</p>
+<h3 class="text-xl font-bold text-cyan-300 mt-4 mb-2">CLI Alternative via curl:</h3>
+<pre><code class="language-bash">
+curl -X POST &quot;http://localhost:8081/api/licenses/generate&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &#x27;{
+    &quot;client_name&quot;: &quot;Acme Cyber Defense Corp&quot;,
+    &quot;tier&quot;: &quot;enterprise&quot;,
+    &quot;duration_days&quot;: 365
+  }&#x27;
+</code></pre>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">4. How to Activate the License in Postall Engine</h2>
+<p class="text-slate-300 my-2 leading-relaxed">1. Open the Postall Command Center at <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">http://localhost:8000</code>.</p>
+<p class="text-slate-300 my-2 leading-relaxed">2. In the left navigation menu, click <strong class="text-white">Admin &amp; Governance</strong> -&gt; <strong class="text-white">System Configuration</strong>.</p>
+<p class="text-slate-300 my-2 leading-relaxed">3. Scroll to the <strong class="text-white">Cryptographic License Management</strong> section.</p>
+<p class="text-slate-300 my-2 leading-relaxed">4. Paste the Base64 key into the <strong class="text-white">Enter License Key</strong> input field.</p>
+<p class="text-slate-300 my-2 leading-relaxed">5. Click <strong class="text-white">Verify &amp; Activate License</strong>.</p>
+<p class="text-slate-300 my-2 leading-relaxed">6. The dashboard will verify the Ed25519 signature against the embedded public key, immediately updating your entitlements badge.</p>
+        </section>
+        
+        <section id="02_LOCAL_SOVEREIGN_AI_COCKPIT" class="mb-16 p-8 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-xl">
+            <h1 class="text-3xl font-black text-cyan-400 mt-8 mb-4 border-b border-slate-700 pb-2">POSTALL HOW-TO GUIDE: 02</h1>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">Sovereign Local AI Cockpit &amp; 100% Control Panel</h2>
+<p class="text-slate-300 my-2 leading-relaxed"><strong class="text-white">Subsystem:</strong> Local Offline AI Engine  </p>
+<p class="text-slate-300 my-2 leading-relaxed"><strong class="text-white">Node:</strong> <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">postall_llm</code> (<code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">http://localhost:11434</code>)  </p>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">1. Overview</h2>
+<p class="text-slate-300 my-2 leading-relaxed">Postall gives operators and enterprise buyers <strong class="text-white">100% control</strong> over the sovereign local artificial intelligence engine. No data leaves the physical server. The Sovereign Local AI Cockpit allows full customization of inference parameters, model selection, prompt personas, and live latency benchmarking.</p>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">2. Hyperparameter Controls</h2>
+<p class="text-slate-300 my-2 leading-relaxed">The following controls can be tuned in real-time under <strong class="text-white">Settings -&gt; AI &amp; Models -&gt; Sovereign Local AI Cockpit</strong>:</p>
+<p class="text-slate-300 my-2 leading-relaxed">1. <strong class="text-white">Installed Model Selector:</strong> Dynamically queries available models from <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">postall_llm</code> (e.g. <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">postall_ai:latest</code>, <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">qwen2.5:1.5b</code>, <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">llama3.2:3b</code>).</p>
+<p class="text-slate-300 my-2 leading-relaxed">2. <strong class="text-white">Temperature (0.0 to 1.0):</strong></p>
+<p class="text-slate-300 my-2 leading-relaxed">   - <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">0.2 - 0.4</code>: Strict analytical facts, compliance reports, and incident runbooks.</p>
+<p class="text-slate-300 my-2 leading-relaxed">   - <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">0.7</code>: Recommended default for strategic thought-leadership posts.</p>
+<p class="text-slate-300 my-2 leading-relaxed">   - <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">0.9</code>: Creative brainstorming and marketing hooks.</p>
+<p class="text-slate-300 my-2 leading-relaxed">3. <strong class="text-white">Top-P Sampling (0.1 to 1.0):</strong> Nucleus sampling threshold.</p>
+<p class="text-slate-300 my-2 leading-relaxed">4. <strong class="text-white">Context Window (<code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">num_ctx</code>):</strong></p>
+<p class="text-slate-300 my-2 leading-relaxed">   - <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">2,048 Tokens</code>: High-throughput burst mode.</p>
+<p class="text-slate-300 my-2 leading-relaxed">   - <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">4,096 Tokens</code>: Recommended balanced operating point.</p>
+<p class="text-slate-300 my-2 leading-relaxed">   - <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">8,192 Tokens</code>: Deep syllabus document and architecture analysis.</p>
+<p class="text-slate-300 my-2 leading-relaxed">   - <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">16,384 Tokens</code>: Full multi-chapter curriculum ingestion.</p>
+<p class="text-slate-300 my-2 leading-relaxed">5. <strong class="text-white">CPU Thread Allocation (<code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">num_threads</code>):</strong> Configure the number of physical CPU cores dedicated to inference (1 to 16 cores).</p>
+<p class="text-slate-300 my-2 leading-relaxed">6. <strong class="text-white">Custom System Persona Prompt:</strong> Global system instructions passed directly into the local model.</p>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">3. How to Run a Live Latency Benchmark</h2>
+<p class="text-slate-300 my-2 leading-relaxed">To attest performance to investors or buyers:</p>
+<p class="text-slate-300 my-2 leading-relaxed">1. Open <strong class="text-white">System Configuration</strong> -&gt; <strong class="text-white">Sovereign Local AI Cockpit</strong>.</p>
+<p class="text-slate-300 my-2 leading-relaxed">2. Click <strong class="text-white">⚡ Run Latency Benchmark</strong>.</p>
+<p class="text-slate-300 my-2 leading-relaxed">3. Postall will send a standardized 50-token test prompt to the local engine.</p>
+<p class="text-slate-300 my-2 leading-relaxed">4. The dashboard displays real-time telemetry:</p>
+<p class="text-slate-300 my-2 leading-relaxed">   - <strong class="text-white">Inference Latency:</strong> e.g., <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">48.2 ms</code></p>
+<p class="text-slate-300 my-2 leading-relaxed">   - <strong class="text-white">Generation Speed:</strong> e.g., <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">32.4 tok/s</code></p>
+<p class="text-slate-300 my-2 leading-relaxed">   - <strong class="text-white">Airgap Verification:</strong> <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">100% Verified (0 Bytes Egress)</code></p>
+<h3 class="text-xl font-bold text-cyan-300 mt-4 mb-2">API Command:</h3>
+<pre><code class="language-bash">
+curl -X POST &quot;http://localhost:8000/api/local-ai/benchmark&quot; \
+  -H &quot;Authorization: Bearer &lt;TOKEN&gt;&quot;
+</code></pre>
+        </section>
+        
+        <section id="03_PUBLIC_CLOUD_AI_AND_FAILOVER" class="mb-16 p-8 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-xl">
+            <h1 class="text-3xl font-black text-cyan-400 mt-8 mb-4 border-b border-slate-700 pb-2">POSTALL HOW-TO GUIDE: 03</h1>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">Public Cloud AI Integration &amp; Multi-AI Failover Pool</h2>
+<p class="text-slate-300 my-2 leading-relaxed"><strong class="text-white">Subsystem:</strong> Hybrid Cloud Intelligence Router  </p>
+<p class="text-slate-300 my-2 leading-relaxed"><strong class="text-white">Supported Providers:</strong> Google Gemini, Mistral AI, OpenAI, Anthropic Claude, Perplexity  </p>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">1. Overview</h2>
+<p class="text-slate-300 my-2 leading-relaxed">Postall operates primarily in <strong class="text-white">Sovereign Local AI mode</strong>. When enterprise policies permit cloud connectivity, operators can enable BYO-Key (Bring Your Own Key) public AI providers for high-speed fallback and specialized multimodal reasoning.</p>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">2. Configuring Google Gemini</h2>
+<p class="text-slate-300 my-2 leading-relaxed">1. Obtain an API key from Google AI Studio (<code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">aistudio.google.com</code>).</p>
+<p class="text-slate-300 my-2 leading-relaxed">2. Open Postall Dashboard -&gt; <strong class="text-white">Settings</strong> -&gt; <strong class="text-white">AI &amp; Models</strong>.</p>
+<p class="text-slate-300 my-2 leading-relaxed">3. Under <strong class="text-white">Google Gemini (BYO-Key)</strong>:</p>
+<p class="text-slate-300 my-2 leading-relaxed">   - Paste your API Key into the field.</p>
+<p class="text-slate-300 my-2 leading-relaxed">   - Select your preferred model: <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">gemini-2.0-flash</code> (recommended for ultra-fast synthesis) or <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">gemini-1.5-pro</code> (deep reasoning).</p>
+<p class="text-slate-300 my-2 leading-relaxed">4. Click <strong class="text-white">Save Settings</strong>.</p>
+<p class="text-slate-300 my-2 leading-relaxed">5. Click <strong class="text-white">Test API Key</strong> to verify the handshake.</p>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">3. Configuring Mistral AI</h2>
+<p class="text-slate-300 my-2 leading-relaxed">1. Obtain an API key from Mistral Console (<code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">console.mistral.ai</code>).</p>
+<p class="text-slate-300 my-2 leading-relaxed">2. In Settings -&gt; <strong class="text-white">Mistral AI (BYO-Key)</strong>, enter your API key.</p>
+<p class="text-slate-300 my-2 leading-relaxed">3. Select <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">mistral-large-latest</code> or <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">codestral-latest</code>.</p>
+<p class="text-slate-300 my-2 leading-relaxed">4. Click <strong class="text-white">Save Settings</strong>.</p>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">4. Multi-AI Failover Pool</h2>
+<p class="text-slate-300 my-2 leading-relaxed">When <strong class="text-white">Autonomous AI Failover Pool</strong> is toggled ON (available on Professional &amp; Sovereign Enterprise tiers):</p>
+<li class="ml-6 list-disc text-slate-300 my-1">If the primary provider encounters HTTP 429 (rate-limit) or a transient outage, Postall automatically routes the prompt to the next healthy provider in the round-robin pool.</li>
+<li class="ml-6 list-disc text-slate-300 my-1">If all public APIs fail or network egress is blocked, Postall transparently fails over to the **Local Offline AI engine** with zero post interruption.</li>
+        </section>
+        
+        <section id="04_ENTERPRISE_MULTI_WORKSPACE_AND_RBAC" class="mb-16 p-8 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-xl">
+            <h1 class="text-3xl font-black text-cyan-400 mt-8 mb-4 border-b border-slate-700 pb-2">POSTALL HOW-TO GUIDE: 04</h1>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">Multi-Tenant Workspaces &amp; Role-Based Access Control (RBAC)</h2>
+<p class="text-slate-300 my-2 leading-relaxed"><strong class="text-white">Subsystem:</strong> Enterprise Isolation &amp; Multi-Tenancy  </p>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">1. Overview</h2>
+<p class="text-slate-300 my-2 leading-relaxed">Workspaces provide strict data and operational isolation across multiple brands, business units, or clients:</p>
+<li class="ml-6 list-disc text-slate-300 my-1">**Isolated Drafts &amp; Approval Queues**</li>
+<li class="ml-6 list-disc text-slate-300 my-1">**Independent Publishing Calendars &amp; Time Slot Scheduling**</li>
+<li class="ml-6 list-disc text-slate-300 my-1">**Isolated Brand Voice Guidelines &amp; Personas**</li>
+<li class="ml-6 list-disc text-slate-300 my-1">**Independent Social Media OAuth Credentials (LinkedIn, X, Instagram, WhatsApp)**</li>
+<li class="ml-6 list-disc text-slate-300 my-1">**Isolated Audit Logs &amp; Security Telemetry**</li>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">2. Quotas by Subscription Tier</h2>
+<tr class="even:bg-slate-800/40"><td class="p-2 border border-slate-700">Tier</td><td class="p-2 border border-slate-700">Max Workspaces</td><td class="p-2 border border-slate-700">Multi-Channel Simulcast</td></tr>
+<p class="text-slate-300 my-2 leading-relaxed">| :--- | :--- | :--- |</p>
+<tr class="even:bg-slate-800/40"><td class="p-2 border border-slate-700">**Starter / Creator**</td><td class="p-2 border border-slate-700">1 Brand Workspace</td><td class="p-2 border border-slate-700">Single-Channel Only</td></tr>
+<tr class="even:bg-slate-800/40"><td class="p-2 border border-slate-700">**Agency / Multi-Brand**</td><td class="p-2 border border-slate-700">15 Brand Workspaces</td><td class="p-2 border border-slate-700">All 4 Channels Simulcast</td></tr>
+<tr class="even:bg-slate-800/40"><td class="p-2 border border-slate-700">**Sovereign Enterprise**</td><td class="p-2 border border-slate-700">Unlimited (-1)</td><td class="p-2 border border-slate-700">All 4 Channels Simulcast</td></tr>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">3. How to Create and Switch Workspaces</h2>
+<p class="text-slate-300 my-2 leading-relaxed">1. In the top navigation bar, click the <strong class="text-white">Active Workspace Dropdown</strong>.</p>
+<p class="text-slate-300 my-2 leading-relaxed">2. Click <strong class="text-white">+ Add Workspace</strong>.</p>
+<p class="text-slate-300 my-2 leading-relaxed">3. Enter the Workspace Name (e.g. <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">Defense Division</code>, <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">Cyber Labs</code>, <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">Brand ABC</code>).</p>
+<p class="text-slate-300 my-2 leading-relaxed">4. Select the primary Brand Persona (e.g. <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">Tech Academy</code>, <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">Executive Briefing</code>, <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">Venture Capital</code>).</p>
+<p class="text-slate-300 my-2 leading-relaxed">5. Click <strong class="text-white">Create Workspace</strong>.</p>
+<p class="text-slate-300 my-2 leading-relaxed">6. Switch between workspaces instantly using the dropdown selector. All drafts, topics, and calendars immediately switch context.</p>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">4. RBAC Roles</h2>
+<li class="ml-6 list-disc text-slate-300 my-1">**Workspace Admin:** Full management of workspace settings, credentials, brand voice, and team members.</li>
+<li class="ml-6 list-disc text-slate-300 my-1">**Editor:** Can create topics, generate drafts, attach infographics, and submit for review.</li>
+<li class="ml-6 list-disc text-slate-300 my-1">**Reviewer:** Can approve or reject posts in the Editorial Approval Queue.</li>
+<li class="ml-6 list-disc text-slate-300 my-1">**Viewer:** Read-only access to published feeds and analytics.</li>
+        </section>
+        
+        <section id="05_EDITORIAL_APPROVALS_AND_ATTACH_INFOGRAPHIC" class="mb-16 p-8 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-xl">
+            <h1 class="text-3xl font-black text-cyan-400 mt-8 mb-4 border-b border-slate-700 pb-2">POSTALL HOW-TO GUIDE: 05</h1>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">Editorial Approvals &amp; On-Demand Visual Assets</h2>
+<p class="text-slate-300 my-2 leading-relaxed"><strong class="text-white">Subsystem:</strong> Content Studio &amp; Visual Synthesis Engine  </p>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">1. Overview</h2>
+<p class="text-slate-300 my-2 leading-relaxed">Postall features a two-man rule / editorial approval pipeline. Posts are created in draft state and reviewed by editors before publication. Operators can synthesize on-demand high-resolution visual infographics (1080x1350 PNG), vector SVGs, and multi-slide LinkedIn document carousels.</p>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">2. Workflow Views</h2>
+<p class="text-slate-300 my-2 leading-relaxed">In <strong class="text-white">Editorial Approvals</strong>, drafts are organized into three distinct tabs:</p>
+<li class="ml-6 list-disc text-slate-300 my-1">**Current:** Active drafts awaiting review, pending approval, or scheduled for today.</li>
+<li class="ml-6 list-disc text-slate-300 my-1">**Upcoming:** Approved posts scheduled for future calendar slots.</li>
+<li class="ml-6 list-disc text-slate-300 my-1">**Past:** Historical archive of published posts and past audit trails.</li>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">3. How to Upgrade a Text-Only Post to a Visual Infographic</h2>
+<p class="text-slate-300 my-2 leading-relaxed">1. Navigate to <strong class="text-white">Approval Queue</strong> in the left sidebar.</p>
+<p class="text-slate-300 my-2 leading-relaxed">2. Locate any text-only post card (marked with the <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">TEXT-ONLY POST</code> placeholder).</p>
+<p class="text-slate-300 my-2 leading-relaxed">3. Click the <strong class="text-white">+ Attach Infographic</strong> button directly on the post card (or open <strong class="text-white">Visual Studio</strong>).</p>
+<p class="text-slate-300 my-2 leading-relaxed">4. The Postall visual synthesis engine automatically:</p>
+<p class="text-slate-300 my-2 leading-relaxed">   - Analyzes post text, identifying key technical takeaways and architecture relationships.</p>
+<p class="text-slate-300 my-2 leading-relaxed">   - Selects the ideal archetype (2x2 Matrix, System Flow, Battle Comparison, or Timeline).</p>
+<p class="text-slate-300 my-2 leading-relaxed">   - Generates high-resolution <strong class="text-white">1080x1350 PNG</strong>, vector <strong class="text-white">SVG</strong>, and multi-slide <strong class="text-white">LinkedIn Carousel PDF</strong>.</p>
+<p class="text-slate-300 my-2 leading-relaxed">   - Embeds the active company white-label branding in the footer.</p>
+<p class="text-slate-300 my-2 leading-relaxed">   - Refreshes the approval card with the interactive preview.</p>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">4. Downloading Visual Assets</h2>
+<p class="text-slate-300 my-2 leading-relaxed">Operators can export assets directly from the <strong class="text-white">Visual Asset Studio</strong>:</p>
+<li class="ml-6 list-disc text-slate-300 my-1">**Vector SVG:** Infinitely scalable vector for technical documentation and slide decks.</li>
+<li class="ml-6 list-disc text-slate-300 my-1">**Export PDF Carousel:** 6-slide formatted LinkedIn document carousel.</li>
+<li class="ml-6 list-disc text-slate-300 my-1">**High-Res PNG:** 1080x1350 pixel graphic optimized for LinkedIn, Instagram, and X feeds.</li>
+        </section>
+        
+        <section id="06_TRIPLE_TAB_LOGS_AND_COMPLIANCE" class="mb-16 p-8 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-xl">
+            <h1 class="text-3xl font-black text-cyan-400 mt-8 mb-4 border-b border-slate-700 pb-2">POSTALL HOW-TO GUIDE: 06</h1>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">Triple-Tab System Logs &amp; Compliance Auditing</h2>
+<p class="text-slate-300 my-2 leading-relaxed"><strong class="text-white">Subsystem:</strong> Immutable Audit Ledger  </p>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">1. Overview</h2>
+<p class="text-slate-300 my-2 leading-relaxed">The <strong class="text-white">System Logs</strong> interface is organized into a <strong class="text-white">Triple-Tab Window System</strong> designed for security officers, systems auditors, and compliance teams:</p>
+<pre><code class="language-">
++-----------------------------------------------------------------------------+
+| [ All System &amp; Audit Logs ]  [ Local LLM / Postall AI ]  [ Public Cloud AI ]|
++-----------------------------------------------------------------------------+
+</code></pre>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">2. Window Breakdown</h2>
+<h3 class="text-xl font-bold text-cyan-300 mt-4 mb-2">Window 1: All System &amp; Audit Logs</h3>
+<li class="ml-6 list-disc text-slate-300 my-1">Comprehensive chronological stream of all system events, authentication attempts, scheduler runs, publication events, and user actions.</li>
+<li class="ml-6 list-disc text-slate-300 my-1">Real-time search filter and severity level dropdown (`INFO`, `WARNING`, `ERROR`, `CRITICAL`).</li>
+<h3 class="text-xl font-bold text-cyan-300 mt-4 mb-2">Window 2: Local LLM / Postall AI Logs</h3>
+<li class="ml-6 list-disc text-slate-300 my-1">Dedicated telemetry for on-premise local inference:</li>
+<p class="text-slate-300 my-2 leading-relaxed">  - Local model execution events (<code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">postall_ai:latest</code>, <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">qwen2.5:1.5b</code>).</p>
+<p class="text-slate-300 my-2 leading-relaxed">  - Evaluated prompt and completion token counts.</p>
+<p class="text-slate-300 my-2 leading-relaxed">  - Guardrail checks and inference duration.</p>
+<h3 class="text-xl font-bold text-cyan-300 mt-4 mb-2">Window 3: Public Cloud AI Logs</h3>
+<li class="ml-6 list-disc text-slate-300 my-1">Shows cloud AI activities (Gemini, Mistral, OpenAI, Claude).</li>
+<li class="ml-6 list-disc text-slate-300 my-1">**Standby Mode:** If no public AI API keys are configured, this window displays an enterprise **Standby Attestation Card**, confirming zero tokens are leaving the sovereign cluster.</li>
+<li class="ml-6 list-disc text-slate-300 my-1">When public AI is configured, shows API dispatch latencies, failover rotations, and token consumption.</li>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">3. Exporting Audit Logs</h2>
+<p class="text-slate-300 my-2 leading-relaxed">1. Click <strong class="text-white">Export Logs</strong> in the top-right corner.</p>
+<p class="text-slate-300 my-2 leading-relaxed">2. Select Time Range: <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">Today</code>, <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">Last 7 Days</code>, <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">Last 15 Days</code>, <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">Last 30 Days</code>, or <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">Custom Range</code>.</p>
+<p class="text-slate-300 my-2 leading-relaxed">3. Choose Format: <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">JSON</code> (raw machine ingestion), <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">CSV</code> (spreadsheet audit), or <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">TXT</code> (plain text).</p>
+<p class="text-slate-300 my-2 leading-relaxed">4. Click <strong class="text-white">Download Export</strong>.</p>
+        </section>
+        
+        <section id="07_DYNAMIC_WHITE_LABEL_BRANDING" class="mb-16 p-8 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-xl">
+            <h1 class="text-3xl font-black text-cyan-400 mt-8 mb-4 border-b border-slate-700 pb-2">POSTALL HOW-TO GUIDE: 07</h1>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">Dynamic White-Label Company Branding</h2>
+<p class="text-slate-300 my-2 leading-relaxed"><strong class="text-white">Subsystem:</strong> Asset Studio &amp; SVG Engine  </p>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">1. Overview</h2>
+<p class="text-slate-300 my-2 leading-relaxed">Every visual asset generated by Postall—including infographics, carousels, and social cards—dynamically incorporates your company&#x27;s branding:</p>
+<li class="ml-6 list-disc text-slate-300 my-1">If company name `Acme Corp` is set, the graphic footer renders:</li>
+<p class="text-slate-300 my-2 leading-relaxed">  <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">ACME CORP • POSTALL ENTERPRISE BLUEPRINT</code></p>
+<li class="ml-6 list-disc text-slate-300 my-1">On the right side:</li>
+<p class="text-slate-300 my-2 leading-relaxed">  <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">ACME CORP • POWERED BY POSTALL • 1080x1350 HIGH-FIDELITY SPECIFICATION</code></p>
+<li class="ml-6 list-disc text-slate-300 my-1">In multi-slide LinkedIn carousels, the top banner dynamically renders:</li>
+<p class="text-slate-300 my-2 leading-relaxed">  <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">ACME CORP • TECHNICAL EXEC BRIEF</code></p>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">2. How to Configure Company Branding</h2>
+<p class="text-slate-300 my-2 leading-relaxed">1. Open <strong class="text-white">System Configuration</strong> -&gt; <strong class="text-white">Branding &amp; Appearance</strong>.</p>
+<p class="text-slate-300 my-2 leading-relaxed">2. Toggle <strong class="text-white">Enable Custom Enterprise Branding</strong> ON.</p>
+<p class="text-slate-300 my-2 leading-relaxed">3. Enter your <strong class="text-white">Organization / Company Name</strong> (e.g. <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">ABC Global</code>, <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">CyberShield Systems</code>).</p>
+<p class="text-slate-300 my-2 leading-relaxed">4. Enter your <strong class="text-white">Brand Tagline</strong> (e.g. <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">Zero-Trust Defense Systems</code>).</p>
+<p class="text-slate-300 my-2 leading-relaxed">5. Click <strong class="text-white">Save Settings</strong>.</p>
+<p class="text-slate-300 my-2 leading-relaxed">6. All new graphics and on-demand attached infographics will automatically reflect this branding.</p>
+        </section>
+        
+        <section id="08_ZERO_TRUST_GATEWAY_AND_DEPLOYMENT" class="mb-16 p-8 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-xl">
+            <h1 class="text-3xl font-black text-cyan-400 mt-8 mb-4 border-b border-slate-700 pb-2">POSTALL HOW-TO GUIDE: 08</h1>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">Zero-Trust Gateway &amp; Cluster Deployment Guide</h2>
+<p class="text-slate-300 my-2 leading-relaxed"><strong class="text-white">Subsystem:</strong> Network Mesh &amp; Production Operations  </p>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">1. Deployment Topology</h2>
+<p class="text-slate-300 my-2 leading-relaxed">Postall is deployed as an air-gapped Docker container cluster communicating over the internal bridge network <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">postall_mesh</code>:</p>
+<pre><code class="language-bash">
+# 1. Create Postall Mesh Network
+docker network create postall_mesh
+
+# 2. Deploy License Forge
+docker run -d --name postall_license_forge --network postall_mesh \
+  -p 8081:8001 randumduck69/postall_license_forge:latest
+
+# 3. Deploy Local Sovereign LLM
+docker run -d --name postall_llm --network postall_mesh \
+  -p 11434:11434 randumduck69/postall_ai:latest
+
+# 4. Deploy Zero-Trust Gateway
+docker run -d --name postall_gateway --network postall_mesh \
+  -p 8080:8080 randumduck69/postall_gateway:latest
+
+# 5. Deploy Postall Core Engine
+docker run -d --name postall_engine --network postall_mesh \
+  -p 8000:8000 -v postall_data:/app/data randumduck69/postall:latest
+</code></pre>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">2. Zero-Trust Gateway Security Features</h2>
+<li class="ml-6 list-disc text-slate-300 my-1">**Token-Bucket Rate Limiting:** Enforces maximum request thresholds per IP/Actor to prevent denial-of-service.</li>
+<li class="ml-6 list-disc text-slate-300 my-1">**Anti-Replay JTI Validation:** Ephemeral tokens contain cryptographic unique JWT IDs (`jti`) tracked with TTL.</li>
+<li class="ml-6 list-disc text-slate-300 my-1">**Strict Headers:** CSP, HSTS, X-Content-Type-Options, X-Frame-Options enabled on all responses.</li>
+        </section>
+        
+        <section id="09_SOVEREIGN_CUSTOMER_FINE_TUNING_AND_DATASET_ADAPTATION" class="mb-16 p-8 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-xl">
+            <h1 class="text-3xl font-black text-cyan-400 mt-8 mb-4 border-b border-slate-700 pb-2">Postall Sovereign Enterprise: Customer AI Fine-Tuning &amp; On-Premise Adaptation</h1>
+<pre><code class="language-">
+========================================================================================
+POSTALL ENTERPRISE SUITE v4 · AIR-GAPPED CUSTOMER DOMAIN FINE-TUNING ENGINE
+100% Zero Cloud Token Egress · On-Premise LoRA &amp; Modelfile Adaptation · Local RAG Memory
+========================================================================================
+</code></pre>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">1. Executive Summary &amp; Zero-Egress Guarantee</h2>
+<p class="text-slate-300 my-2 leading-relaxed">Enterprise customers and regulated institutions (defense, healthcare, banking, telecommunications) require autonomous content synthesis that matches their exact proprietary architecture, terminology, tone of voice, and regulatory boundaries. </p>
+<p class="text-slate-300 my-2 leading-relaxed">However, cloud-based fine-tuning services (OpenAI Fine-Tuning, Vertex AI, AWS Bedrock) require streaming confidential customer intellectual property (IP) across the public internet.</p>
+<p class="text-slate-300 my-2 leading-relaxed"><strong class="text-white">Postall Sovereign Enterprise solves this with 100% On-Premise Customer Domain Fine-Tuning:</strong></p>
+<li class="ml-6 list-disc text-slate-300 my-1">**Zero Outbound Network Egress:** Documents are parsed, chunked, and fine-tuned entirely within the local cluster node (`postall_llm` and `postall_engine`).</li>
+<li class="ml-6 list-disc text-slate-300 my-1">**Dynamic Model Creation:** Uses Ollama&#x27;s local engine to compile bespoke, adapted models (e.g. `customer_sovereign_ai:latest`) derived from `postall_ai:latest`.</li>
+<li class="ml-6 list-disc text-slate-300 my-1">**Hybrid Domain Memory (Fine-Tuning + RAG):** Ingests domain guidelines into both the model system persona and the local SQLite memory vector table (`local_llm_memory`) with strict workspace isolation.</li>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">2. Supported Customer Data Formats</h2>
+<p class="text-slate-300 my-2 leading-relaxed">The universal document ingestion parser extracts structured text from:</p>
+<li class="ml-6 list-disc text-slate-300 my-1">**PDF Documents (`.pdf`):** Architecture whitepapers, threat intelligence bulletins, SOPs.</li>
+<li class="ml-6 list-disc text-slate-300 my-1">**Word Documents (`.docx`, `.doc`):** Corporate branding guidelines, style manuals.</li>
+<li class="ml-6 list-disc text-slate-300 my-1">**Spreadsheets &amp; Data (`.csv`, `.xlsx`):** Product catalogs, terminology taxonomies, FAQ pairs.</li>
+<li class="ml-6 list-disc text-slate-300 my-1">**Plain Text &amp; Markdown (`.txt`, `.md`):** Engineering specifications, READMEs, runbooks.</li>
+<li class="ml-6 list-disc text-slate-300 my-1">**Direct Voice Directives:** In-dashboard prompt editor for immediate brand guardrail rules.</li>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">3. Step-by-Step Configuration Guide</h2>
+<h3 class="text-xl font-bold text-cyan-300 mt-4 mb-2">Step 1: Open Sovereign Local AI Cockpit</h3>
+<p class="text-slate-300 my-2 leading-relaxed">1. Navigate to <strong class="text-white">System Configuration</strong> from the left navigation sidebar.</p>
+<p class="text-slate-300 my-2 leading-relaxed">2. Select <strong class="text-white">🧠 AI Engine &amp; Keys</strong> (<code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">#sec-ai</code>) from the settings directory.</p>
+<p class="text-slate-300 my-2 leading-relaxed">3. Locate the <strong class="text-white">Sovereign Local AI Cockpit</strong> panel.</p>
+<h3 class="text-xl font-bold text-cyan-300 mt-4 mb-2">Step 2: Ingest Enterprise Dataset or Guidelines</h3>
+<p class="text-slate-300 my-2 leading-relaxed">1. In the <strong class="text-white">Customer Domain Adaptation &amp; Sovereign Fine-Tuning</strong> section:</p>
+<p class="text-slate-300 my-2 leading-relaxed">   - <strong class="text-white">File Upload:</strong> Click the dashed upload area to select your enterprise PDF, DOCX, TXT, or CSV document.</p>
+<p class="text-slate-300 my-2 leading-relaxed">   - <strong class="text-white">Direct Rules (Optional):</strong> Enter key company terms, product architectures, forbidden phrases, or brand messaging style into the <strong class="text-white">Proprietary Brand Voice &amp; Domain Rules</strong> textarea.</p>
+<p class="text-slate-300 my-2 leading-relaxed">   - <strong class="text-white">Target Model Tag:</strong> Customize the model identifier (e.g., <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">customer_sovereign_ai:latest</code> or <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">acme_defense_model:latest</code>).</p>
+<h3 class="text-xl font-bold text-cyan-300 mt-4 mb-2">Step 3: Trigger On-Premise Adaptation</h3>
+<p class="text-slate-300 my-2 leading-relaxed">1. Click <strong class="text-white">⚡ Adapt &amp; Fine-Tune Sovereign Model</strong>.</p>
+<p class="text-slate-300 my-2 leading-relaxed">2. The engine executes the sovereign pipeline:</p>
+<p class="text-slate-300 my-2 leading-relaxed">   - Extracts plain text from the uploaded document using <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">extract_text_from_file</code>.</p>
+<p class="text-slate-300 my-2 leading-relaxed">   - Chunks domain knowledge and stores vectors in <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">local_llm_memory</code>.</p>
+<p class="text-slate-300 my-2 leading-relaxed">   - Compiles a dedicated Modelfile and registers the new adapted model directly on <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">postall_llm:11434</code>.</p>
+<p class="text-slate-300 my-2 leading-relaxed">   - Records the dataset in <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">customer_ai_datasets</code> with token estimates.</p>
+<p class="text-slate-300 my-2 leading-relaxed">   - Automatically activates the newly fine-tuned model for subsequent autonomous synthesis.</p>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">4. Verification &amp; Testing</h2>
+<p class="text-slate-300 my-2 leading-relaxed">To confirm the fine-tuned model reflects your proprietary customer guidelines:</p>
+<p class="text-slate-300 my-2 leading-relaxed">1. Open the floating <strong class="text-white">Postall Oracle (Sovereign AI)</strong> chat widget or run a synthesis task.</p>
+<p class="text-slate-300 my-2 leading-relaxed">2. Query proprietary concepts from your uploaded document (e.g., *&quot;What is our primary enterprise product and target audience?&quot;*).</p>
+<p class="text-slate-300 my-2 leading-relaxed">3. The model will cite the specific product names, architectures, and guidelines defined in your dataset.</p>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">5. Enterprise Governance &amp; GDPR Compliance</h2>
+<li class="ml-6 list-disc text-slate-300 my-1">**Multi-Workspace Isolation:** Ingested datasets and memory chunks are strictly segregated by `workspace_id`. Operators in Workspace A cannot access Workspace B models.</li>
+<li class="ml-6 list-disc text-slate-300 my-1">**Right-to-Erasure (GDPR Art. 17):** Clicking the trash icon next to an ingested dataset immediately purges the dataset record and deletes all associated memory chunks from `local_llm_memory`.</li>
+        </section>
+        
+        <section id="MASTER_CUSTOMER_CONFIGURATION_GUIDE" class="mb-16 p-8 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-xl">
+            <h1 class="text-3xl font-black text-cyan-400 mt-8 mb-4 border-b border-slate-700 pb-2">Postall Sovereign Enterprise Edition — Master Customer Configuration &amp; Deployment Guide</h1>
+<p class="text-slate-300 my-2 leading-relaxed"><strong class="text-white">Version:</strong> 4.2 Sovereign Enterprise  </p>
+<p class="text-slate-300 my-2 leading-relaxed"><strong class="text-white">Architecture:</strong> Zero-Trust Mesh · Air-Gapped Local-First Orchestrator · Pluggable Frontier Cloud AI  </p>
+<p class="text-slate-300 my-2 leading-relaxed"><strong class="text-white">Security Classification:</strong> Enterprise Sovereign Tier  </p>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">1. Executive Architecture Overview</h2>
+<p class="text-slate-300 my-2 leading-relaxed">Postall is engineered with a <strong class="text-white">Local-First, Zero-Trust Architecture</strong>. It empowers organizations to automate their technical and marketing publishing while ensuring:</p>
+<p class="text-slate-300 my-2 leading-relaxed">1. <strong class="text-white">100% Data Sovereignty</strong>: Internal source articles, product blueprints, and unpublished intellectual property never leave your infrastructure unless explicitly approved.</p>
+<p class="text-slate-300 my-2 leading-relaxed">2. <strong class="text-white">Massive Cloud Token Cost Savings</strong>: Over 90% of daily operations (drafting, summarization, research, tone formatting, compliance checks, and architecture blueprints) run on your <strong class="text-white">Local Private AI</strong> at <strong class="text-white">$0 per token</strong>.</p>
+<p class="text-slate-300 my-2 leading-relaxed">3. <strong class="text-white">Pluggable Frontier Cloud AI (BYO-Key)</strong>: High-resolution visual synthesis (such as 4K 2D editorial comic art or 3D Pixar cinematic renders) is routed to frontier cloud providers (e.g. Google Imagen 3) using each customer&#x27;s own API key.</p>
+<pre><code class="language-">
++-------------------------------------------------------------------------------+
+|                        POSTALL ENTERPRISE MESH NETWORK                        |
+|                                                                               |
+|  [ Customer Web Client ] &lt;---&gt; [ Postall Gateway :8080 ] (Zero-Trust Proxy)  |
+|                                         |                                     |
+|                                         v                                     |
+|                             [ Postall Engine :8000 ]                          |
+|                                    /        \                                 |
+|                                   v          v                                |
+|          [ Local AI LLM :11434 ]           [ Encrypted Vault ]                |
+|          (Qwen GGUF / Sovereign AI)        (AES-256 Per-Workspace BYO-Keys)  |
+|          - Technical Post Synthesis                    |                      |
+|          - Local SVG Blueprints &amp; 2x2 Grids            v                      |
+|          - Zero Token Cost / Air-Gapped    [ Optional Frontier Cloud AI ]     |
+|                                            (Google Gemini / Imagen 3 / Veo)   |
++-------------------------------------------------------------------------------+
+</code></pre>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">2. Multi-Workspace &amp; Per-Customer BYO-Key Isolation</h2>
+<p class="text-slate-300 my-2 leading-relaxed">Postall supports multiple customer organizations and isolated departments via <strong class="text-white">Workspaces</strong>.</p>
+<h3 class="text-xl font-bold text-cyan-300 mt-4 mb-2">Workspace Isolation Guarantees</h3>
+<li class="ml-6 list-disc text-slate-300 my-1">**Data Segregation**: Drafts, editorial queues, topics, and publication history are strictly partitioned by `workspace_id`.</li>
+<li class="ml-6 list-disc text-slate-300 my-1">**Per-Customer BYO-Keys**: Each workspace can maintain its own encrypted API keys (Google Gemini, OpenAI, Anthropic, LinkedIn, X). Secrets are encrypted at rest using AES-256 Fernet ciphers (`ws_{id}_{key}`). Company A’s credentials and billing accounts are completely isolated from Company B.</li>
+<li class="ml-6 list-disc text-slate-300 my-1">**Dynamic White-Label Branding**: When generating graphics or reports, Postall dynamically replaces platform branding with the active workspace company name (e.g., *&quot;ACME CORP BRIEFING&quot;*).</li>
+<h3 class="text-xl font-bold text-cyan-300 mt-4 mb-2">How to Configure Workspace API Keys</h3>
+<p class="text-slate-300 my-2 leading-relaxed">1. Log in as an Administrator (<code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">admin</code>).</p>
+<p class="text-slate-300 my-2 leading-relaxed">2. Select your active workspace from the top-left Workspace Selector.</p>
+<p class="text-slate-300 my-2 leading-relaxed">3. Navigate to <strong class="text-white">Admin &amp; Governance → System Configuration</strong>.</p>
+<p class="text-slate-300 my-2 leading-relaxed">4. In the <strong class="text-white">Google Gemini (BYO-Key)</strong> card, paste your API key.</p>
+<p class="text-slate-300 my-2 leading-relaxed">5. Click <strong class="text-white">Save Configuration</strong>. The key is encrypted into the vault with workspace isolation.</p>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">3. Visual Generation Architecture: Technical Blueprints vs. Comic Art</h2>
+<p class="text-slate-300 my-2 leading-relaxed">Postall provides two specialized visual engines:</p>
+<tr class="even:bg-slate-800/40"><td class="p-2 border border-slate-700">Visual Archetype</td><td class="p-2 border border-slate-700">Rendering Engine</td><td class="p-2 border border-slate-700">Mode &amp; Cost</td><td class="p-2 border border-slate-700">Output Best Suited For</td></tr>
+<p class="text-slate-300 my-2 leading-relaxed">| :--- | :--- | :--- | :--- |</p>
+<tr class="even:bg-slate-800/40"><td class="p-2 border border-slate-700">**System Architecture Blueprint**</td><td class="p-2 border border-slate-700">Local CairoSVG &amp; Playwright Chromium</td><td class="p-2 border border-slate-700">100% Offline · 0 Tokens</td><td class="p-2 border border-slate-700">Deep technical architectures, Kubernetes clusters, eBPF probes, and zero-trust mesh flows.</td></tr>
+<tr class="even:bg-slate-800/40"><td class="p-2 border border-slate-700">**Enterprise Cheat Sheet (2x2)**</td><td class="p-2 border border-slate-700">Local CairoSVG &amp; Playwright Chromium</td><td class="p-2 border border-slate-700">100% Offline · 0 Tokens</td><td class="p-2 border border-slate-700">Operational standards, security checklists, compliance rules, and best-practice matrices.</td></tr>
+<tr class="even:bg-slate-800/40"><td class="p-2 border border-slate-700">**Versus Benchmark Arena**</td><td class="p-2 border border-slate-700">Local CairoSVG &amp; Playwright Chromium</td><td class="p-2 border border-slate-700">100% Offline · 0 Tokens</td><td class="p-2 border border-slate-700">Head-to-head architectural comparisons (e.g. *PostgreSQL vs Redis*, *AWS vs Bare Metal*).</td></tr>
+<tr class="even:bg-slate-800/40"><td class="p-2 border border-slate-700">**Editorial Comic Story**</td><td class="p-2 border border-slate-700">Google Imagen 3 via Cloud Media Studio</td><td class="p-2 border border-slate-700">Cloud BYO-Key (Customer)</td><td class="p-2 border border-slate-700">High-emotion 2D character comics (e.g. panicked engineer at terminal vs. smirking masked hacker).</td></tr>
+<tr class="even:bg-slate-800/40"><td class="p-2 border border-slate-700">**3D Pixar Animated Scene**</td><td class="p-2 border border-slate-700">Google Imagen 3 via Cloud Media Studio</td><td class="p-2 border border-slate-700">Cloud BYO-Key (Customer)</td><td class="p-2 border border-slate-700">Cinematic 3D character narratives (e.g. executive banking alert or system migration story).</td></tr>
+<tr class="even:bg-slate-800/40"><td class="p-2 border border-slate-700">**Custom Media Canvas**</td><td class="p-2 border border-slate-700">Hybrid Canvas Compositor</td><td class="p-2 border border-slate-700">100% Offline · 0 Tokens</td><td class="p-2 border border-slate-700">Upload your company’s custom artwork or stock photos; Postall overlays typography and badges.</td></tr>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">4. Token Economics &amp; ROI Dashboard</h2>
+<p class="text-slate-300 my-2 leading-relaxed">Every customer workspace has access to real-time ROI telemetry:</p>
+<li class="ml-6 list-disc text-slate-300 my-1">**Tokens Saved Locally**: Accurately counts every token generated by the local sovereign LLM.</li>
+<li class="ml-6 list-disc text-slate-300 my-1">**Financial Savings Calculation**:</li>
+<p class="text-slate-300 my-2 leading-relaxed">  $$\text{USD Savings} = \left(\frac{\text{Local Tokens}}{1{,}000{,}000}\right) \times \$10.00$$</p>
+<li class="ml-6 list-disc text-slate-300 my-1">**ROI Metric**: Displayed on the Executive Analytics Dashboard, providing legal, financial, and executive leadership with concrete proof of cost reduction.</li>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">5. Audit Logging, Compliance &amp; Three-Tab Telemetry</h2>
+<p class="text-slate-300 my-2 leading-relaxed">To satisfy enterprise SOX, HIPAA, and ISO 27001 requirements:</p>
+<li class="ml-6 list-disc text-slate-300 my-1">**Tab 1: All System &amp; Audit Logs**: Full chronological audit trail of all logins, editorial approvals, publication events, and data changes with Merkle tamper-proof hashes.</li>
+<li class="ml-6 list-disc text-slate-300 my-1">**Tab 2: Local LLM / Postall AI**: Real-time telemetry showing offline AI inference runs, latency, prompt tokens, and zero-egress verification.</li>
+<li class="ml-6 list-disc text-slate-300 my-1">**Tab 3: Public Cloud AI**: Telemetry of external API dispatches (when BYO-Key is active), or a zero-egress standby confirmation screen when running in pure air-gapped mode.</li>
+<li class="ml-6 list-disc text-slate-300 my-1">**Multi-Format Export**: One-click export of audit logs to JSON, CSV, or formatted TXT for 24-hour, 7-day, 15-day, 30-day, or custom date ranges.</li>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">6. License Server &amp; Key Generation (License Forge)</h2>
+<p class="text-slate-300 my-2 leading-relaxed">Postall instances validate cryptographic licenses via <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">postall_license_forge</code>:</p>
+<li class="ml-6 list-disc text-slate-300 my-1">**Algorithm**: Ed25519 digital signatures with tamper-evident payload verification.</li>
+<li class="ml-6 list-disc text-slate-300 my-1">**Supported Tiers**:</li>
+<p class="text-slate-300 my-2 leading-relaxed">  - <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">COMMUNITY_OFFLINE</code>: 1 Workspace, 100% Local AI only, Zero Cloud Egress.</p>
+<p class="text-slate-300 my-2 leading-relaxed">  - <code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">ENTERPRISE_SOVEREIGN</code>: Unlimited Workspaces, Local AI + BYO-Key Cloud AI, Full SOX Dual Authorization, Multi-Platform Publishing.</p>
+<li class="ml-6 list-disc text-slate-300 my-1">**License Renewal**: Generate new signed keys in License Forge (`http://localhost:8081`) and activate them in Postall Command Center under **Admin &amp; Governance → System Configuration → License Activation**.</li>
+        </section>
+        
+        <section id="SETUP_GUIDE_WITH_SCREENSHOTS" class="mb-16 p-8 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-xl">
+            <h1 class="text-3xl font-black text-cyan-400 mt-8 mb-4 border-b border-slate-700 pb-2">Postall Sovereign Enterprise Edition — Turnkey Setup Guide &amp; Visual Walkthrough</h1>
+<p class="text-slate-300 my-2 leading-relaxed"><strong class="text-white">Architecture:</strong> Zero-Trust Mesh · Air-Gapped Sovereign AI · Multi-Tenant Vault  </p>
+<p class="text-slate-300 my-2 leading-relaxed"><strong class="text-white">Platform Version:</strong> 4.2.0 Sovereign Enterprise Edition  </p>
+<p class="text-slate-300 my-2 leading-relaxed"><strong class="text-white">Target Environment:</strong> Docker Engine 24.0+ · Linux / Windows / macOS  </p>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">Executive Quick Start (1-Click Deployment)</h2>
+<p class="text-slate-300 my-2 leading-relaxed">Postall is delivered as an air-gapped containerized ecosystem that deploys in under 2 minutes.</p>
+<h3 class="text-xl font-bold text-cyan-300 mt-4 mb-2">Windows (PowerShell Administrator)</h3>
+<pre><code class="language-powershell">
+# Run the 1-Click Turnkey Installer
+Invoke-WebRequest -Uri &quot;https://raw.githubusercontent.com/randumduck/Postall_Releases/main/setup_postall.ps1&quot; -OutFile &quot;setup_postall.ps1&quot;
+powershell -ExecutionPolicy Bypass -File .\setup_postall.ps1
+</code></pre>
+<h3 class="text-xl font-bold text-cyan-300 mt-4 mb-2">Linux / macOS (Bash Shell)</h3>
+<pre><code class="language-bash">
+# Run the 1-Click Turnkey Shell Installer
+curl -sSL https://raw.githubusercontent.com/randumduck/Postall_Releases/main/setup_postall.sh -o setup_postall.sh
+chmod +x setup_postall.sh &amp;&amp; ./setup_postall.sh
+</code></pre>
+<h3 class="text-xl font-bold text-cyan-300 mt-4 mb-2">Docker Compose Turnkey Stack</h3>
+<pre><code class="language-bash">
+docker compose up -d
+</code></pre>
+<p class="text-slate-300 my-2 leading-relaxed">Once started, open your web browser to:</p>
+<p class="text-slate-300 my-2 leading-relaxed">$$\mathbf{http://localhost:8000/}$$</p>
+<p class="text-slate-300 my-2 leading-relaxed">You will be automatically redirected to the <strong class="text-white">Pristine Vanilla Setup Wizard (<code class="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-xs">/setup</code>)</strong>.</p>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">Visual Setup Walkthrough (Step-by-Step)</h2>
+<pre><code class="language-">
++===================================================================================+
+|  POSTALL COMMAND CENTER  ::  ENTERPRISE INSTALLATION WIZARD                       |
++===================================================================================+
+|                                                                                   |
+|  [ Step 1: Volume ] -&gt; [ Step 2: Admin ] -&gt; [ Step 3: Vault ] -&gt; [ Step 4: Done ] |
+|                                                                                   |
+|  +-----------------------------------------------------------------------------+  |
+|  |  STEP 1: STORAGE VOLUME &amp; HARDWARE PERSISTENCE VERIFICATION                 |  |
+|  |                                                                             |  |
+|  |  [*] Persistence Check : /app/data mounted to Docker volume &#x27;postall_data&#x27;  |  |
+|  |  [*] Encryption Salt   : Generated at rest (AES-256 Fernet Engine active)   |  |
+|  |  [*] Sovereign Engine  : Ollama daemon reachable on postall_llm:11434       |  |
+|  |  [*] Status            : ALL HARDWARE BOUNDARIES VERIFIED                   |  |
+|  +-----------------------------------------------------------------------------+  |
+|                                                               [ NEXT: SECURITY -&gt; ]|
++===================================================================================+
+</code></pre>
+<h3 class="text-xl font-bold text-cyan-300 mt-4 mb-2">Step 1: Storage Volume &amp; Hardware Persistence Verification</h3>
+<li class="ml-6 list-disc text-slate-300 my-1">**Purpose**: Verifies that your container is mounted to persistent external storage (`postall_data`). When Docker containers are updated or restarted, your databases, generated media, and cryptographic keys remain safely persisted on host disk.</li>
+<li class="ml-6 list-disc text-slate-300 my-1">**Action**: The installer automatically confirms file write permissions in `/app/data`. Click **Next: Security**.</li>
+<hr class="my-6 border-slate-700"/>
+<pre><code class="language-">
++===================================================================================+
+|  STEP 2: ROOT ADMINISTRATOR IDENTITY &amp; SOX COMPLIANCE                             |
++===================================================================================+
+|                                                                                   |
+|  Administrator Username  : [ admin                                            ]   |
+|  Secure Password         : [ *********************************                ]   |
+|  Confirm Password        : [ *********************************                ]   |
+|  Admin Notification Email: [ security-team@company.internal                   ]   |
+|                                                                                   |
+|  [x] Enable SOX Maker-Checker (4-Eyes Rule: Authors cannot self-approve posts)    |
+|  [x] Enable Real-Time GDPR PII Scrubbing (Auto-quarantine sensitive tokens)       |
+|                                                                                   |
+|  [&lt;- BACK ]                                           [ NEXT: AI CONFIGURATION -&gt; ]|
++===================================================================================+
+</code></pre>
+<h3 class="text-xl font-bold text-cyan-300 mt-4 mb-2">Step 2: Root Administrator &amp; SOX Compliance Initialization</h3>
+<li class="ml-6 list-disc text-slate-300 my-1">**Purpose**: Establishes the primary operator account and cryptographically seeds PBKDF2-SHA256 password hashes with unique 210,000-iteration salts.</li>
+<li class="ml-6 list-disc text-slate-300 my-1">**Enterprise Controls**:</li>
+<p class="text-slate-300 my-2 leading-relaxed">  - <strong class="text-white">SOX 4-Eyes Governance</strong>: Ensures that junior content creators cannot publish directly to live enterprise social feeds without managerial review.</p>
+<p class="text-slate-300 my-2 leading-relaxed">  - <strong class="text-white">GDPR PII Scrubbing</strong>: Real-time redaction of credit cards, passwords, and employee identities before content leaves the generation engine.</p>
+<hr class="my-6 border-slate-700"/>
+<pre><code class="language-">
++===================================================================================+
+|  STEP 3: SOVEREIGN AI COCKPIT &amp; VAULT BYO-KEY ORCHESTRATION                      |
++===================================================================================+
+|                                                                                   |
+|  Primary AI Engine : (o) Local Sovereign AI (Air-Gapped Qwen 1.5B / $0 Tokens)     |
+|                      ( ) Frontier Cloud AI Only (Gemini / OpenAI / Anthropic)     |
+|                      ( ) Hybrid Air-Gapped (Local First + Cloud Fallback)         |
+|                                                                                   |
+|  Cloud BYO-Key Vault (Optional - Encrypted with Fernet AES-256 at Rest):          |
+|  +-----------------------------------------------------------------------------+  |
+|  | Google Gemini API Key : [ AQ.Ab8RN6KBTiZdScKgdFu47eg5HiL_jKEm9RLT...    ]   |  |
+|  | OpenAI API Key        : [ sk-proj-Optional-BYO-Key......................    ]   |  |
+|  | Anthropic API Key     : [ sk-ant-Optional-BYO-Key.......................    ]   |  |
+|  +-----------------------------------------------------------------------------+  |
+|                                                                                   |
+|  [&lt;- BACK ]                                            [ NEXT: BRAND IDENTITY -&gt; ]|
++===================================================================================+
+</code></pre>
+<h3 class="text-xl font-bold text-cyan-300 mt-4 mb-2">Step 3: Sovereign AI Cockpit &amp; Multi-Tenant BYO-Key Vault</h3>
+<li class="ml-6 list-disc text-slate-300 my-1">**Purpose**: Configures your default artificial intelligence pipelines.</li>
+<li class="ml-6 list-disc text-slate-300 my-1">**Zero Token Cost**: By selecting **Local Sovereign AI**, all post generation, technical analysis, and SVG diagrams run at **$0 per token** entirely inside your private container perimeter.</li>
+<li class="ml-6 list-disc text-slate-300 my-1">**Cloud Escalation**: If you provide a Google Gemini or OpenAI key, the system encrypts it with AES-256 and only calls cloud APIs when explicitly requested (such as 4K visual art generation).</li>
+<hr class="my-6 border-slate-700"/>
+<pre><code class="language-">
++===================================================================================+
+|  STEP 4: BRAND IDENTITY &amp; DYNAMIC WORKSPACE THEME                                |
++===================================================================================+
+|                                                                                   |
+|  Organization / Brand Name : [ Postall Enterprise Cloud                     ]     |
+|  Primary Accent Color      : [ #38BDF8 (Sky Cyan)   ]                             |
+|  Default Visual Theme      : [ Obsidian (Soothing Dark)            v ]            |
+|  Default Content Persona   : [ Tech Academy &amp; Education (Deep Dive) v ]           |
+|                                                                                   |
+|  [ ] Seed Enterprise Demo Blueprints &amp; Case Studies                               |
+|                                                                                   |
+|  [&lt;- BACK ]                                                 [ COMPLETE SETUP (✓) ]|
++===================================================================================+
+</code></pre>
+<h3 class="text-xl font-bold text-cyan-300 mt-4 mb-2">Step 4: Brand Identity &amp; Default Workspace</h3>
+<li class="ml-6 list-disc text-slate-300 my-1">**Purpose**: Personalizes generated infographics, carousels, and visual headers with your company&#x27;s official typography and color palette.</li>
+<li class="ml-6 list-disc text-slate-300 my-1">**Clicking Complete Setup**: Writes the verified configuration to `postall.db`, locks the setup wizard, and immediately transitions into the **Postall Command Center Dashboard**.</li>
+<hr class="my-6 border-slate-700"/>
+<h2 class="text-2xl font-bold text-slate-100 mt-6 mb-3 border-b border-slate-800 pb-1">Day-to-Day Operations &amp; Feature Usage</h2>
+<h3 class="text-xl font-bold text-cyan-300 mt-4 mb-2">1. Unified Content Studio (3-Click Idea-to-Live)</h3>
+<pre><code class="language-">
++-----------------------------------------------------------------------------------+
+| UNIFIED CONTENT STUDIO                                                            |
+| +-------------------------------------------------------------------------------+ |
+| | Content Synthesis Brief (Topic, Headline, or Article URL)                     | |
+| | [ eBPF Kernel Probes for Real-Time Threat Detection in Cloud Kubernetes      ] | |
+| +-------------------------------------------------------------------------------+ |
+|  Platform: [ LinkedIn (3,000 chars) v ]   Tone: [ Authoritative &amp; Technical v ]  |
+|  Visual Aspect: [ 4:5 Portrait      v ]   Archetype: [ Cartoon Tech Explainer v]  |
+|                                                                                   |
+|  [+] Attach Custom Media Canvas (Optional - Overlays your branding on photo)     |
+|                                                                                   |
+|                       [ ⚡ GENERATE POST &amp; Branded Media ]                         |
++-----------------------------------------------------------------------------------+
+</code></pre>
+<li class="ml-6 list-disc text-slate-300 my-1">**How to Use**:</li>
+<p class="text-slate-300 my-2 leading-relaxed">  1. Enter your concept or paste an engineering blog post URL.</p>
+<p class="text-slate-300 my-2 leading-relaxed">  2. Select your platform and desired visual format (<strong class="text-white">Infographic Blueprint</strong>, <strong class="text-white">Cartoon Tech Explainer</strong>, or <strong class="text-white">LinkedIn PDF Carousel</strong>).</p>
+<p class="text-slate-300 my-2 leading-relaxed">  3. Click <strong class="text-white">Generate Post &amp; Branded Media</strong>.</p>
+<p class="text-slate-300 my-2 leading-relaxed">  4. The Sovereign AI writes a comprehensive 4-part breakdown (&gt;2,000 characters), generates branded vector artwork, scrubs PII, and registers the post into the Editorial Queue.</p>
+<hr class="my-6 border-slate-700"/>
+<h3 class="text-xl font-bold text-cyan-300 mt-4 mb-2">2. Editorial Approvals &amp; 4-Eyes Governance</h3>
+<pre><code class="language-">
++-----------------------------------------------------------------------------------+
+| EDITORIAL QUEUE :: DRAFT #60 (PENDING SOX APPROVAL)                               |
++-----------------------------------------------------------------------------------+
+| [ LinkedIn Post Copy Preview ]            | [ Visual Media Preview (1080x1350) ]  |
+|                                           |                                       |
+| Bold Headline &amp; Executive Hook:           |  +---------------------------------+  |
+| &quot;How eBPF Kernel Probes Intercept...&quot;     |  | POSTALL BRIEFING   🛡️ SECURITY   |  |
+|                                           |  | Zero-Trust Kubernetes Security  |  |
+| Technical Analysis &amp; Architecture:        |  | ------------------------------- |  |
+| 1. Control Plane Isolation                |  | [Dev Avatar]  [Architect Avatar]|  |
+| 2. Microsegmentation &amp; mTLS               |  | &quot;How does eBPF intercept bugs?&quot; |  |
+| 3. Sub-second Threat Quarantining         |  |                                 |  |
+|                                           |  | [ Under Hood ] [ Playbook ]     |  |
+| #CyberSecurity #DevSecOps #Kubernetes     |  +---------------------------------+  |
+|                                                                                   |
+| [✓ Approve]     [✗ Reject]     [📅 Schedule]     [⚡ Post Now]     [👁️ Preflight]   |
++-----------------------------------------------------------------------------------+
+</code></pre>
+<li class="ml-6 list-disc text-slate-300 my-1">**Maker-Checker Enforcement**: If the author attempts to approve their own draft, Postall rejects the action with `403 Forbidden: Peer review required`.</li>
+<li class="ml-6 list-disc text-slate-300 my-1">**Preflight Scorecard**: Evaluates read-time, technical density, hashtag presence, and brand safety on a 100-point scale before transmission.</li>
+<hr class="my-6 border-slate-700"/>
+<h3 class="text-xl font-bold text-cyan-300 mt-4 mb-2">3. Multi-Model ROI Calculator &amp; Boardroom Telemetry</h3>
+<pre><code class="language-">
++-----------------------------------------------------------------------------------+
+| PREBUILT DASHBOARDS :: ENTERPRISE TOKEN ROI CALCULATOR                            |
++-----------------------------------------------------------------------------------+
+|  Monthly Volume Cadence: [ 80 Posts / Month ]   Average Words: [ 400 Words ]      |
+|                                                                                   |
+|  Provider Model              Rate / 1M Tokens    Projected Monthly    Annual Cost |
+|  -------------------------------------------------------------------------------  |
+|  OpenAI GPT-4o               $30.00 / 1M         $2.72                $32.64      |
+|  Anthropic Claude 3.5 Sonnet $15.00 / 1M         $1.36                $16.32      |
+|  Google Gemini 2.5 Pro       $7.00 / 1M          $0.63                $7.61       |
+|  Google Gemini 3.5 Flash     $0.35 / 1M          $0.03                $0.38       |
+|  Postall Sovereign Engine    $0.00 (AIR-GAPPED)  $0.00                $0.00       |
+|  -------------------------------------------------------------------------------  |
+|  CUMULATIVE ENTERPRISE VALUE: 100% Zero-Egress Freedom · Data Leakage Impossibility|
++-----------------------------------------------------------------------------------+
+</code></pre>
+<li class="ml-6 list-disc text-slate-300 my-1">Accessible via `GET /api/analytics/roi-calculator`.</li>
+<li class="ml-6 list-disc text-slate-300 my-1">Provides financial officers and security leadership with concrete, unalterable proof of token savings.</li>
+<hr class="my-6 border-slate-700"/>
+<h3 class="text-xl font-bold text-cyan-300 mt-4 mb-2">4. Zero-Trust Gateway &amp; Cryptographic Security Architecture</h3>
+<pre><code class="language-">
++-----------------------+     RS256 JWT Signed      +-------------------------+
+|    POSTALL ENGINE     | ------------------------&gt; |     POSTALL GATEWAY     |
+|     (Core Docker)     |   (Anti-Replay jti nonce  |   (Zero-Trust Proxy)    |
+|       Port 8000       |    Payload SHA-256 hash)  |        Port 8080        |
++-----------------------+                           +-------------------------+
+                                                                 |
+                                +--------------------------------+--------------------+
+                                |                                |                    |
+                                v                                v                    v
+                        [ LinkedIn API ]                  [ X/Twitter API ]   [ Meta / IG API ]
+</code></pre>
+<li class="ml-6 list-disc text-slate-300 my-1">**Signed Dispatches**: Every publication request across all 10 social networks carries a 60-second expiring RS256 JWT signed with your node&#x27;s RSA private key.</li>
+<li class="ml-6 list-disc text-slate-300 my-1">**Anti-Replay Cache**: The Gateway rejects any duplicate request within its sliding TTL window (`401 Replay Attack Detected`).</li>
+<li class="ml-6 list-disc text-slate-300 my-1">**Tamper Protection**: Any intercepted or modified HTTP payload fails body SHA-256 verification (`401 Payload Tampering Failed`).</li>
+        </section>
+        
+  </main>
+
+  <footer class="mt-16 pt-8 border-t border-slate-800 text-center text-xs text-slate-500 font-mono">
+    POSTALL SOVEREIGN ENTERPRISE EDITION · ALL RIGHTS RESERVED · CONFIDENTIAL
+  </footer>
+</body>
+</html>

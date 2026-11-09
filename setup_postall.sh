@@ -167,14 +167,14 @@ echo -e "${GREEN}   POSTALL DEPLOYMENT SUCCESSFUL!                       ${NC}"
 echo -e "${GREEN}   Core Platform Engine & Sovereign Local AI online.    ${NC}"
 echo -e "${GREEN}=========================================================${NC}"
 echo -e "\nAccess your Postall Enterprise Dashboard at:"
-echo -e "${GREEN}👉  http://localhost:8000/dashboard${NC}"
+echo -e "${GREEN}👉  http://localhost:8000/${NC}"
 echo -e "\n${GRAY}Microservice Topology:${NC}"
 echo -e "  ${GRAY}- Core Engine:   http://localhost:8000${NC}"
 echo -e "  ${GRAY}- Local AI Mesh: http://localhost:11434${NC}\n"
 
 # Attempt to open browser on supported systems
 if command -v xdg-open &> /dev/null; then
-    xdg-open "http://localhost:8000/dashboard" >/dev/null 2>&1 || true
+    xdg-open "http://localhost:8000/" >/dev/null 2>&1 || true
 elif command -v open &> /dev/null; then
-    open "http://localhost:8000/dashboard" >/dev/null 2>&1 || true
+    open "http://localhost:8000/" >/dev/null 2>&1 || true
 fi
