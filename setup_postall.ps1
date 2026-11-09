@@ -170,7 +170,7 @@ Write-Host "   POSTALL DEPLOYMENT SUCCESSFUL!                       " -Foregroun
 Write-Host "   Core Platform Engine & Sovereign Local AI online.    " -ForegroundColor Green
 Write-Host "=========================================================" -ForegroundColor Green
 Write-Host "`nAccess your Postall Enterprise Dashboard at:" -ForegroundColor White
-Write-Host "👉  http://localhost:8000/" -ForegroundColor Green -BackgroundColor Black
+Write-Host "->  http://localhost:8000/" -ForegroundColor Green -BackgroundColor Black
 Write-Host "`nMicroservice Topology:" -ForegroundColor Gray
 Write-Host "  - Core Engine:   http://localhost:8000" -ForegroundColor Gray
 Write-Host "  - Local AI Mesh: http://localhost:11434" -ForegroundColor Gray
